@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENA HUB - Sistema de Gestión de Convenios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/estilos_inicio.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-nav">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="inicio.html">
+                <img src="img/sena-colombia-logo.png" alt="SENA" width="50" height="40" class="me-2">
+                <span class="fw-bold">SENA HUB</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#informacion">
+                            <i class="fas fa-info-circle me-1"></i>Información
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#convenios">
+                            <i class="fas fa-handshake me-1"></i>Convenios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#instituciones">
+                            <i class="fas fa-university me-1"></i>Instituciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contacto">
+                            <i class="fas fa-envelope me-1"></i>Contacto
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a class="btn btn-outline-light" href="register.html">
+                        <i class="fas fa-user-plus me-1"></i>Registrarse
+                    </a>
+                    <a class="btn btn-primary" href="login.html">
+                        <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <div class="container my-5 pt-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-3">
+                    Sistema de Gestión de <span class="text-primary">Convenios</span>
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Administra convenios interinstitucionales, instituciones educativas y programas de homologación de manera eficiente y centralizada.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="login.html" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket me-2"></i>Comenzar Ahora
+                    </a>
+                    <a href="#informacion" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-info-circle me-2"></i>Más Información
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="img/sena-colombia-logo.png" alt="SENA" class="img-fluid" style="max-height: 400px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- CARRUSEL DE INFORMACIÓN -->
+    <div class="container mb-5 mt-5" id="informacion">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2 class="display-6 fw-bold text-primary">
+                    <i class="fas fa-images me-2"></i>Información General
+                </h2>
+                <p class="lead text-muted">Conoce las oportunidades disponibles para tu formación continua</p>
+            </div>
+            <div class="col-12">
+                <div id="carouselInformacion" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carouselInformacion" data-bs-slide-to="0" class="active"></button>
+                        <button type="button" data-bs-target="#carouselInformacion" data-bs-slide-to="1"></button>
+                        <button type="button" data-bs-target="#carouselInformacion" data-bs-slide-to="2"></button>
+                        <button type="button" data-bs-target="#carouselInformacion" data-bs-slide-to="3"></button>
+                        <button type="button" data-bs-target="#carouselInformacion" data-bs-slide-to="4"></button>
+                        <button type="button" data-bs-target="#carouselInformacion" data-bs-slide-to="5"></button>
+                    </div>
+                    
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="img/carrusel1.png" class="d-block w-100 carousel-img" alt="Convenios Institucionales">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="img/carrusel2.png" class="d-block w-100 carousel-img" alt="Instituciones Aliadas">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="img/carrusel3.png" class="d-block w-100 carousel-img" alt="Programas de Homologación">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="img/carrusel4.png" class="d-block w-100 carousel-img" alt="Oportunidades Educativas">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="img/carrusel5.png" class="d-block w-100 carousel-img" alt="Formación Continua">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="img/carrusel6.png" class="d-block w-100 carousel-img" alt="Alianzas Estratégicas">
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselInformacion" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselInformacion" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURES SECTION -->
+    <div class="container mb-5 py-5 bg-light-custom rounded" id="convenios">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-6 fw-bold">
+                    <i class="fas fa-star me-2 text-primary"></i>Características Principales
+                </h2>
+                <p class="lead text-muted">Todo lo que necesitas para gestionar convenios institucionales</p>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-handshake fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Gestión de Convenios</h5>
+                        <p class="card-text text-muted">
+                            Administra todos los convenios interinstitucionales de manera centralizada con búsquedas avanzadas y filtros.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-university fa-3x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Instituciones Aliadas</h5>
+                        <p class="card-text text-muted">
+                            Registro completo de instituciones educativas con información detallada y seguimiento de convenios.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-graduation-cap fa-3x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Homologaciones</h5>
+                        <p class="card-text text-muted">
+                            Control de programas académicos homologables y rutas de continuación educativa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-chart-line fa-3x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Estadísticas</h5>
+                        <p class="card-text text-muted">
+                            Visualiza métricas y reportes del sistema con gráficos interactivos y análisis detallados.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-file-excel fa-3x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Carga Masiva</h5>
+                        <p class="card-text text-muted">
+                            Importa convenios desde archivos Excel de manera rápida y eficiente.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-shield-alt fa-3x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Seguridad</h5>
+                        <p class="card-text text-muted">
+                            Sistema seguro con autenticación JWT y control de acceso basado en roles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INSTITUCIONES SECTION -->
+    <div class="container mb-5" id="instituciones">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-6 fw-bold">
+                    <i class="fas fa-building me-2 text-primary"></i>Instituciones Educativas
+                </h2>
+                <p class="lead text-muted">Red de instituciones aliadas para continuación educativa</p>
+            </div>
+            
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Accede al sistema</strong> para consultar la información completa de las instituciones y convenios disponibles.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACTO SECTION -->
+    <div class="container mb-5 py-5 bg-light-custom rounded" id="contacto">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2 class="display-6 fw-bold">
+                    <i class="fas fa-envelope me-2 text-primary"></i>Contáctanos
+                </h2>
+                <p class="lead text-muted">¿Tienes preguntas? Estamos aquí para ayudarte</p>
+            </div>
+            
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-4 text-center">
+                            <i class="fas fa-map-marker-alt fa-2x text-primary mb-2"></i>
+                            <h5>Ubicación</h5>
+                            <p class="text-muted">SENA Regional Risaralda<br>Pereira, Colombia</p>
+                        </div>
+                        
+                        <div class="mb-4 text-center">
+                            <i class="fas fa-phone fa-2x text-success mb-2"></i>
+                            <h5>Teléfono</h5>
+                            <p class="text-muted">+57 (6) 340 0707</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <i class="fas fa-envelope fa-2x text-warning mb-2"></i>
+                            <h5>Correo Electrónico</h5>
+                            <p class="text-muted">info@sena.edu.co</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <h5>
+                        <i class="fas fa-graduation-cap me-2"></i>SENA HUB
+                    </h5>
+                    <p class="text-muted mb-0">Sistema de Gestión de Convenios Interinstitucionales</p>
+                    <p class="text-muted small">© 2025 SENA. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <h6>Enlaces Rápidos</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#informacion" class="text-muted text-decoration-none">Información</a></li>
+                        <li><a href="#convenios" class="text-muted text-decoration-none">Convenios</a></li>
+                        <li><a href="#instituciones" class="text-muted text-decoration-none">Instituciones</a></li>
+                        <li><a href="login.html" class="text-muted text-decoration-none">Iniciar Sesión</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>Síguenos</h6>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-twitter fa-2x"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-youtube fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/modo_claro_oscuro.js"></script>
+</body>
+</html>

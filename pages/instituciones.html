@@ -1,0 +1,280 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-md-flex align-items-center justify-content-between mb-4">
+          <div>
+            <h4 class="card-title mb-0">Gestión de Instituciones</h4>
+            <p class="card-subtitle">Administra las instituciones del sistema</p>
+          </div>
+          <div class="mt-3 mt-md-0">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createInstitucionModal">
+              <i class="bi bi-plus-circle"></i> Nueva Institución
+            </button>
+          </div>
+        </div>
+
+        <!-- Buscador -->
+        <div class="row mb-4">
+          <div class="col-md-8">
+            <div class="input-group">
+              <input 
+                type="text" 
+                class="form-control" 
+                id="searchInput" 
+                placeholder="Buscar institución por nombre..."
+                aria-label="Buscar institución">
+              <button class="btn btn-outline-primary" type="button" id="searchButton">
+                <i class="bi bi-search"></i> Buscar
+              </button>
+              <button class="btn btn-outline-secondary" type="button" id="filterButton" title="Filtros">
+                <i class="bi bi-funnel"></i>
+              </button>
+              <button class="btn btn-outline-secondary" type="button" id="clearSearchButton">
+                <i class="bi bi-x-circle"></i> Limpiar
+              </button>
+            </div>
+            <small class="text-muted">Ingresa el nombre de la institución</small>
+          </div>
+        </div>
+
+        <!-- Tabla de instituciones -->
+        <div class="table-responsive mt-4">
+          <table class="table mb-0 text-nowrap align-middle fs-3">
+            <thead>
+              <tr>
+                <th scope="col" class="px-0 text-muted">Institución</th>
+                <th scope="col" class="px-0 text-muted">NIT</th>
+                <th scope="col" class="px-0 text-muted">Dirección</th>
+                <th scope="col" class="px-0 text-muted">Municipio</th>
+                <th scope="col" class="px-0 text-muted">Convenios</th>
+                <th scope="col" class="px-0 text-muted text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="datos">
+              <!-- Las instituciones se cargarán aquí dinámicamente -->
+              <tr>
+                <td colspan="6" class="text-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2 text-muted">Cargando instituciones...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para crear institución -->
+<div class="modal fade" id="createInstitucionModal" tabindex="-1" aria-labelledby="createInstitucionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createInstitucionModalLabel">
+          <i class="bi bi-building-add"></i> Crear Nueva Institución
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formSaveInstitucion">
+          <div class="mb-3">
+            <label for="inputNit" class="form-label">NIT *</label>
+            <input type="text" class="form-control" id="inputNit" placeholder="Ej: 800099310-6" required>
+          </div>
+          <div class="mb-3">
+            <label for="inputNombre" class="form-label">Nombre de la Institución *</label>
+            <input type="text" class="form-control" id="inputNombre" required>
+          </div>
+          <div class="mb-3">
+            <label for="inputDireccion" class="form-label">Dirección *</label>
+            <input type="text" class="form-control" id="inputDireccion" required>
+          </div>
+          <div class="mb-3">
+            <label for="inputMunicipio" class="form-label">Municipio *</label>
+            <select class="form-select" id="inputMunicipio" required>
+              <option value="">Seleccione un municipio...</option>
+            </select>
+            <small class="text-muted">Selecciona el municipio</small>
+          </div>
+          <div class="mb-3">
+            <label for="inputConvenios" class="form-label">Cantidad de Convenios</label>
+            <input type="number" class="form-control" id="inputConvenios" value="0" min="0">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnGuardarInstitucion">
+          <i class="bi bi-save"></i> Guardar Institución
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar institución -->
+<div class="modal fade" id="editInstitucionModal" tabindex="-1" aria-labelledby="editInstitucionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editInstitucionModalLabel">
+          <i class="bi bi-pencil-square"></i> Editar Institución
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditInstitucion">
+          <input type="hidden" id="editNitOriginal">
+          <div class="mb-3">
+            <label for="editNit" class="form-label">NIT *</label>
+            <input type="text" class="form-control" id="editNit" required readonly>
+            <small class="text-muted">El NIT no se puede modificar</small>
+          </div>
+          <div class="mb-3">
+            <label for="editNombre" class="form-label">Nombre de la Institución *</label>
+            <input type="text" class="form-control" id="editNombre" required>
+          </div>
+          <div class="mb-3">
+            <label for="editDireccion" class="form-label">Dirección *</label>
+            <input type="text" class="form-control" id="editDireccion" required>
+          </div>
+          <div class="mb-3">
+            <label for="editMunicipio" class="form-label">Municipio *</label>
+            <select class="form-select" id="editMunicipio" required>
+              <option value="">Seleccione un municipio...</option>
+            </select>
+            <small class="text-muted">Selecciona el municipio</small>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnEditInstitucion">
+          <i class="bi bi-save"></i> Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para filtros de instituciones -->
+<div class="modal fade" id="filtersInstitucionModal" tabindex="-1" aria-labelledby="filtersInstitucionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="filtersInstitucionModalLabel">
+          <i class="bi bi-funnel"></i> Filtros de Instituciones
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formFiltersInstitucion">
+          <div class="mb-3">
+            <label for="filterDireccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control" id="filterDireccion" placeholder="Buscar por dirección">
+          </div>
+          <div class="mb-3">
+            <label for="filterMunicipio" class="form-label">Municipio</label>
+            <select class="form-select" id="filterMunicipio">
+              <option value="">Todos los municipios</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="filterConvenios" class="form-label">Cantidad exacta de Convenios</label>
+            <input type="number" class="form-control" id="filterConvenios" min="0" placeholder="Ej: 3">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Rango de Convenios</label>
+            <div class="d-flex gap-2">
+              <input type="number" class="form-control" id="filterMinConvenios" min="0" placeholder="Mínimo">
+              <input type="number" class="form-control" id="filterMaxConvenios" min="0" placeholder="Máximo">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="clearFiltersModalBtn">Limpiar</button>
+        <button type="button" class="btn btn-primary" id="applyFiltersBtn">Buscar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal de Confirmación de Eliminación -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="mb-4">
+          <div class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center" 
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-exclamation-triangle text-white" style="font-size: 3rem;"></i>
+          </div>
+        </div>
+        <h4 class="mb-3">¿Eliminar Institución?</h4>
+        <p class="text-muted mb-4" id="deleteConfirmMessage">
+          ¿Estás seguro de que deseas eliminar esta institución?
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i> Cancelar
+          </button>
+          <button type="button" class="btn btn-danger px-4" id="btnConfirmDelete">
+            <i class="bi bi-trash"></i> Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Éxito -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="mb-4">
+          <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center" 
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-check-lg text-white" style="font-size: 3rem;"></i>
+          </div>
+        </div>
+        <h4 class="mb-3" id="successModalTitle">¡Operación Exitosa!</h4>
+        <p class="text-muted mb-4" id="successModalMessage">
+          La operación se completó correctamente.
+        </p>
+        <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">
+          <i class="bi bi-check-circle"></i> Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Error -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="mb-4">
+          <div class="rounded-circle bg-danger d-inline-flex align-items-center justify-content-center" 
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-x-lg text-white" style="font-size: 3rem;"></i>
+          </div>
+        </div>
+        <h4 class="mb-3" id="errorModalTitle">¡Error!</h4>
+        <p class="text-muted mb-4" id="errorModalMessage">
+          Ocurrió un error al procesar la operación.
+        </p>
+        <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

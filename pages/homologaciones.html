@@ -1,0 +1,376 @@
+<div class="row justify-content-center col-12 col-xl-10 px-0" style="width:115%; max-width:none;">
+    <div class="card" >
+      <div class="card-body">
+        <div class="d-md-flex align-items-center justify-content-between mb-4">
+          <div>
+            <h4 class="card-title mb-0">Gestión de Homologaciones</h4>
+            <p class="card-subtitle">Administra las homologaciones entre programas</p>
+          </div>
+          <div class="mt-3 mt-md-0">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createHomologacionModal">
+              <i class="bi bi-plus-circle"></i> Nueva homologación
+            </button>
+          </div>
+        </div>
+
+        <!-- Buscador -->
+        <div class="row mb-4">
+          <div class="col-md-8">
+            <div class="input-group">
+              <input 
+                type="text" 
+                class="form-control" 
+                id="searchInput" 
+                placeholder="Buscar programa-institución..."
+                aria-label="Buscar programa-institucion">
+              <button class="btn btn-outline-primary" type="button" id="searchButton">
+                <i class="bi bi-search"></i> Buscar
+              </button>
+              <button class="btn btn-outline-secondary" type="button" id="filterButton" title="Filtros">
+                <i class="bi bi-funnel"></i>
+              </button>
+              <button class="btn btn-outline-secondary" type="button" id="clearSearchButton">
+                <i class="bi bi-x-circle"></i> Limpiar
+              </button>
+            </div>
+            <small class="text-muted">Ingresa ID de la homologación</small>
+          </div>
+        </div>
+
+        <!-- Tabla de usuarios -->
+        <div class="table-responsive mt-4">
+          <table class="table mb-0 align-middle fs-3" style="width:100%; border-collapse:separate; border-spacing:18px 0;">
+            <thead>
+              <tr>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:6%; padding:1.3rem 1.2rem; white-space:normal; word-break:break-word;">ID</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:12%; padding:1.3rem 1.2rem; white-space:normal;">Programa SENA</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:8%; padding:1.3rem 1.2rem; white-space:normal;">Código programa SENA</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:5%; padding:1.3rem 1.2rem; white-space:normal;">Versión programa SENA</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:12%; padding:1.3rem 1.2rem; white-space:normal;">Institución Convenio</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:12%; padding:1.3rem 1.2rem; white-space:normal;">Programa Institución</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:5%; padding:1.3rem 1.2rem; white-space:normal;">Nivel Programa</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:6%; padding:1.3rem 1.2rem; white-space:normal;">Créditos Totales</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:6%; padding:1.3rem 1.2rem; white-space:normal;">Créditos Homologados</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:6%; padding:1.3rem 1.2rem; white-space:normal;">Créditos Pendientes</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:6%; padding:1.3rem 1.2rem; white-space:normal;">Modalidad</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:4%; padding:1.3rem 1.2rem; white-space:normal;">Semestres</th>
+                  <th scope="col" class="px-0 text-muted align-middle" style="width:5%; padding:1.3rem 1.2rem; white-space:normal;">Enlace</th>
+                  <th scope="col" class="px-0 text-muted text-end align-middle" style="width:4%; padding:1.3rem 1.2rem; white-space:normal;">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody id="datos">
+              <!-- Las homologaciones se cargarán aquí dinámicamente -->
+              <tr>
+                <td colspan="15" class="text-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2 text-muted text-center">Cargando homologaciones...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para filtros de homologaciones -->
+<div class="modal fade" id="filtersHomologacionModal" tabindex="-1" aria-labelledby="filtersHomologacionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="filtersHomologacionModalLabel">
+          <i class="bi bi-funnel"></i> Filtros de Homologaciones
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formFiltersHomologacion">
+          <div class="mb-3">
+            <label for="filterNombreProgramaSena" class="form-label">Nombre Programa SENA</label>
+            <input type="text" class="form-control" id="filterNombreProgramaSena" placeholder="Ej. Análisis y Desarrollo de Software">
+          </div>
+          <div class="mb-3">
+            <label for="filterNivelPrograma" class="form-label">Nivel Programa</label>
+            <input type="text" class="form-control" id="filterNivelPrograma" placeholder="Buscar por nivel">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="clearFiltersModalBtn">Limpiar</button>
+        <button type="button" class="btn btn-primary" id="applyFiltersBtn">Buscar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para crear homologación -->
+<div class="modal fade" id="createHomologacionModal" tabindex="-1" aria-labelledby="createHomologacionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createHomologacionModalLabel">
+          <i class="bi bi-person-plus"></i> Crear Nueva Homologación
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formSaveHomologacion">
+            <div class="mb-3">
+                <label for="inputNitInstitucion" class="form-label">NIT Institución Destino *</label>
+                <input type="text" class="form-control" id="inputNitInstitucion" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputNombreProgramaSena" class="form-label">Nombre Programa SENA *</label>
+                <input type="text" class="form-control" id="inputNombreProgramaSena" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputCodProgramaSena" class="form-label">Código Programa SENA *</label>
+                <input type="text" class="form-control" id="inputCodProgramaSena" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputVersionPrograma" class="form-label">Versión Programa *</label>
+                <input type="number" class="form-control" id="inputVersionPrograma" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputTitulo" class="form-label">Título *</label>
+                <input type="text" class="form-control" id="inputTitulo" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputProgramaIes" class="form-label">Programa IES *</label>
+                <input type="text" class="form-control" id="inputProgramaIes" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputNivelPrograma" class="form-label">Nivel Programa *</label>
+                <select class="form-select" id="inputNivelPrograma" required>
+                <option value="">Seleccione un nivel</option>
+                <option value="Técnico">Técnico</option>
+                <option value="Tecnológico">Tecnológico</option>
+                <option value="Profesional">Profesional</option>
+                <option value="Especialización">Especialización</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputSnies" class="form-label">SNIES *</label>
+                <input type="number" class="form-control" id="inputSnies" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputCreditosHomologados" class="form-label">Créditos Homologados *</label>
+                <input type="number" class="form-control" id="inputCreditosHomologados" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputCreditosTotales" class="form-label">Créditos Totales *</label>
+                <input type="number" class="form-control" id="inputCreditosTotales" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputCreditosPendientes" class="form-label">Créditos Pendientes *</label>
+                <input type="number" class="form-control" id="inputCreditosPendientes" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputModalidad" class="form-label">Modalidad *</label>
+                <select class="form-select" id="inputModalidad" required>
+                <option value="">Seleccione una modalidad</option>
+                <option value="Presencial">Presencial</option>
+                <option value="Virtual">Virtual</option>
+                <option value="Mixta">Mixta</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputSemestres" class="form-label">Semestres *</label>
+                <input type="text" class="form-control" id="inputSemestres" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputRegional" class="form-label">Regional *</label>
+                <input type="text" class="form-control" id="inputRegional" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="inputEnlace" class="form-label">Enlace *</label>
+                <input type="url" class="form-control" id="inputEnlace" placeholder="https://ejemplo.com" required>
+            </div>
+        </form>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnGuardarHomologacion">
+          <i class="bi bi-save"></i> Guardar Homologación
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar homologación -->
+<div class="modal fade" id="editHomologacionModal" tabindex="-1" aria-labelledby="editHomologacionModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editHomologacionModalLabel">
+          <i class="bi bi-pencil-square"></i> Editar Homologación
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditHomologacion">
+          <input type="hidden" id="editIdHomologacion">
+          
+          <div class="mb-3">
+            <label for="editNitInstitucion" class="form-label">NIT Institución Destino *</label>
+            <input type="text" class="form-control" id="editNitInstitucion" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editNombreProgramaSena" class="form-label">Nombre Programa SENA *</label>
+            <input type="text" class="form-control" id="editNombreProgramaSena" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editCodProgramaSena" class="form-label">Código Programa SENA *</label>
+            <input type="text" class="form-control" id="editCodProgramaSena" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editVersionPrograma" class="form-label">Versión Programa *</label>
+            <input type="number" class="form-control" id="editVersionPrograma" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editTitulo" class="form-label">Título *</label>
+            <input type="text" class="form-control" id="editTitulo" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editProgramaIes" class="form-label">Programa IES *</label>
+            <input type="text" class="form-control" id="editProgramaIes" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editNivelPrograma" class="form-label">Nivel Programa *</label>
+            <select class="form-select" id="editNivelPrograma" required>
+              <option value="">Seleccione un nivel</option>
+              <option value="Técnico">Técnico</option>
+              <option value="Tecnológico">Tecnológico</option>
+              <option value="Profesional">Profesional</option>
+              <option value="Especialización">Especialización</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editSnies" class="form-label">SNIES *</label>
+            <input type="number" class="form-control" id="editSnies" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editCreditosHomologados" class="form-label">Créditos Homologados *</label>
+            <input type="number" class="form-control" id="editCreditosHomologados" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editCreditosTotales" class="form-label">Créditos Totales *</label>
+            <input type="number" class="form-control" id="editCreditosTotales" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editCreditosPendientes" class="form-label">Créditos Pendientes *</label>
+            <input type="number" class="form-control" id="editCreditosPendientes" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editModalidad" class="form-label">Modalidad *</label>
+            <select class="form-select" id="editModalidad" required>
+              <option value="">Seleccione una modalidad</option>
+              <option value="Presencial">Presencial</option>
+              <option value="Virtual">Virtual</option>
+              <option value="Mixta">Mixta</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editSemestres" class="form-label">Semestres *</label>
+            <input type="text" class="form-control" id="editSemestres" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editRegional" class="form-label">Regional *</label>
+            <input type="text" class="form-control" id="editRegional" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="editEnlace" class="form-label">Enlace *</label>
+            <input type="url" class="form-control" id="editEnlace" placeholder="https://ejemplo.com" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnEditHomologacion">
+          <i class="bi bi-save"></i> Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Éxito -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="mb-4">
+          <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center" 
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-check-lg text-white" style="font-size: 3rem;"></i>
+          </div>
+        </div>
+        <h4 class="mb-3" id="successModalTitle">¡Operación Exitosa!</h4>
+        <p class="text-muted mb-4" id="successModalMessage">
+          La operación se completó correctamente.
+        </p>
+        <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">
+          <i class="bi bi-check-circle"></i> Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Error -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-5">
+        <div class="mb-4">
+          <div class="rounded-circle bg-danger d-inline-flex align-items-center justify-content-center" 
+               style="width: 80px; height: 80px;">
+            <i class="bi bi-x-lg text-white" style="font-size: 3rem;"></i>
+          </div>
+        </div>
+        <h4 class="mb-3" id="errorModalTitle">¡Error!</h4>
+        <p class="text-muted mb-4" id="errorModalMessage">
+          Ocurrió un error al procesar la operación.
+        </p>
+        <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
