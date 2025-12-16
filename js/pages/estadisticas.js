@@ -1,31 +1,23 @@
-import { estadisticaService } from '../api/estadistica_service.js';
-import { convenioService } from '../api/convenios_service.js';
-import { institucionService } from '../api/instituciones_service.js';
-import { homologacionService } from '../api/homologacion_service.js';
+import { estadisticaService } from '../api/estadistica.service.js';
+import { convenioService } from '../api/convenios.service.js';
+import { institucionService } from '../api/instituciones.service.js';
+import { homologacionService } from '../api/homologacion.service.js';
 
-let errorModalInstance = null;
-let estadisticasCache = [];
-let chartsInstances = {}; // Para guardar instancias de gráficos y poder destruirlos
+// ===============================================
+// VARIABLES GLOBALES
+// ===============================================
+let chartsInstances = {};
+let estadisticasCache = {
+    convenios: [],
+    instituciones: [],
+    homologaciones: [],
+    estadisticasDB: []
+};
+let currentMunicipiosView = 'instituciones'; // Vista actual del gráfico de municipios
 
-/**
- * Inicializa el modal de error
- */
-function initializeModal() {
-    const errorModalElement = document.getElementById('errorModal');
-    if (errorModalElement && !errorModalInstance) {
-        errorModalInstance = new bootstrap.Modal(errorModalElement);
-    }
-}
-
-/**
- * Muestra modal de error
- */
-function showErrorModal(title, message) {
-    initializeModal();
-    document.getElementById('errorModalTitle').textContent = title;
-    document.getElementById('errorModalMessage').textContent = message;
-    errorModalInstance.show();
-}
+// ===============================================
+// UTILIDADES
+// ===============================================
 
 /**
  * Formatea números con separador de miles
@@ -41,7 +33,8 @@ function formatCurrency(num) {
     return new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
-        minimumFractionDigits: 0
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
     }).format(num);
 }
 
@@ -63,90 +56,6 @@ function formatDate(dateString) {
 }
 
 /**
- * Renderiza tarjetas de resumen
- */
-function renderResumenCards(stats) {
-    const contenedor = document.getElementById('resumen-cards');
-    if (!contenedor) return;
-
-    // Calcular totales
-    const totalConvenios = stats.convenios?.length || 0;
-    const totalInstituciones = stats.instituciones?.length || 0;
-    const totalHomologaciones = stats.homologaciones?.length || 0;
-
-    // Calcular precio estimado total de convenios
-    const precioTotal = stats.convenios?.reduce((sum, c) => {
-        return sum + (parseFloat(c.precio_estimado) || 0);
-    }, 0) || 0;
-
-    contenedor.innerHTML = `
-        <div class="col-md-6 col-lg-3 mb-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-                            <i class="bi bi-file-earmark-text text-primary fs-4"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="mb-0 text-muted">Convenios</h6>
-                            <h3 class="mb-0 fw-bold">${formatNumber(totalConvenios)}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3 mb-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
-                            <i class="bi bi-building text-success fs-4"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="mb-0 text-muted">Instituciones</h6>
-                            <h3 class="mb-0 fw-bold">${formatNumber(totalInstituciones)}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3 mb-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-warning bg-opacity-10 p-3">
-                            <i class="bi bi-arrow-repeat text-warning fs-4"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="mb-0 text-muted">Homologaciones</h6>
-                            <h3 class="mb-0 fw-bold">${formatNumber(totalHomologaciones)}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3 mb-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
-                            <i class="bi bi-cash-stack text-info fs-4"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="mb-0 text-muted" style="font-size: 0.85rem;">Valor Estimado</h6>
-                            <h5 class="mb-0 fw-bold" style="font-size: 1.2rem;">${formatCurrency(precioTotal)}</h5>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-/**
  * Destruye un gráfico si existe
  */
 function destroyChart(chartId) {
@@ -157,16 +66,307 @@ function destroyChart(chartId) {
 }
 
 /**
- * Renderiza gráfico de convenios por estado (Pie Chart)
+ * Obtiene colores según el tema
  */
-function renderChartConveniosEstado(convenios) {
-    const canvas = document.getElementById('chartConveniosEstado');
+function getThemeColors() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    return {
+        primary: '#338702',
+        secondary: '#529d3b',
+        info: '#2196F3',
+        warning: '#FF9800',
+        success: '#4CAF50',
+        danger: '#F44336',
+        purple: '#9C27B0',
+        textColor: isDark ? '#EAEAEA' : '#1A1A1A',
+        gridColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+        backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF'
+    };
+}
+
+// ===============================================
+// RENDERIZADO DE KPIs
+// ===============================================
+
+/**
+ * Renderiza las tarjetas KPI con animación
+ */
+function renderKPICards(stats) {
+    const totalConvenios = stats.convenios?.length || 0;
+    const totalInstituciones = stats.instituciones?.length || 0;
+    const totalHomologaciones = stats.homologaciones?.length || 0;
+    const precioTotal = stats.convenios?.reduce((sum, c) => {
+        return sum + (parseFloat(c.precio_estimado) || 0);
+    }, 0) || 0;
+
+    // Animar números con efecto de conteo
+    animateNumber('kpi-convenios', totalConvenios, 1000);
+    animateNumber('kpi-instituciones', totalInstituciones, 1000);
+    animateNumber('kpi-homologaciones', totalHomologaciones, 1000);
+    animateValue('kpi-valor', precioTotal, 1500);
+
+    // Renderizar sparklines
+    renderSparkline('sparkline-convenios', [15, 18, 22, 25, 28, 32, 37]);
+    renderSparkline('sparkline-instituciones', [18, 20, 22, 23, 24, 25, 26]);
+    renderSparkline('sparkline-homologaciones', [1, 1, 2, 2, 2, 3, 3]);
+    renderSparkline('sparkline-valor', [5000000, 6500000, 8000000, 9500000, 11000000, 12500000, precioTotal]);
+}
+
+/**
+ * Anima un número desde 0 hasta el valor final
+ */
+function animateNumber(elementId, finalValue, duration) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    let startValue = 0;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function (easeOutQuad)
+        const easeProgress = progress * (2 - progress);
+        const currentValue = Math.floor(startValue + (finalValue - startValue) * easeProgress);
+        
+        element.textContent = formatNumber(currentValue);
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            element.textContent = formatNumber(finalValue);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+/**
+ * Anima un valor monetario
+ */
+function animateValue(elementId, finalValue, duration) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    let startValue = 0;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const easeProgress = progress * (2 - progress);
+        const currentValue = Math.floor(startValue + (finalValue - startValue) * easeProgress);
+        
+        element.textContent = formatCurrency(currentValue);
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            element.textContent = formatCurrency(finalValue);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+/**
+ * Renderiza mini gráfico sparkline
+ */
+function renderSparkline(canvasId, data) {
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
-    // Limpiar contenedor y crear canvas si no existe
-    const container = canvas.parentElement;
-    container.innerHTML = '<canvas id="chartConveniosEstadoCanvas"></canvas>';
-    const ctx = document.getElementById('chartConveniosEstadoCanvas').getContext('2d');
+    const colors = getThemeColors();
+    destroyChart(canvasId);
+
+    chartsInstances[canvasId] = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: data.map((_, i) => i),
+            datasets: [{
+                data: data,
+                borderColor: colors.primary,
+                backgroundColor: `${colors.primary}20`,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            },
+            scales: {
+                x: { display: false },
+                y: { display: false }
+            }
+        }
+    });
+}
+
+// ===============================================
+// GRÁFICO DE TENDENCIA TEMPORAL
+// ===============================================
+
+/**
+ * Renderiza gráfico de tendencia anual - MEJORADO
+ */
+function renderTendenciaChart(convenios) {
+    const canvas = document.getElementById('chartTendencia');
+    if (!canvas) return;
+
+    const colors = getThemeColors();
+    destroyChart('tendencia');
+
+    // Agrupar por mes
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const datos = new Array(12).fill(0);
+
+    convenios.forEach(c => {
+        if (c.fecha_firma) {
+            try {
+                const fecha = new Date(c.fecha_firma);
+                const mes = fecha.getMonth();
+                datos[mes]++;
+            } catch (e) {
+                console.warn('Fecha inválida:', c.fecha_firma);
+            }
+        }
+    });
+
+    chartsInstances['tendencia'] = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: meses,
+            datasets: [{
+                label: 'Convenios por mes',
+                data: datos,
+                borderColor: colors.primary,
+                backgroundColor: `${colors.primary}40`,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: colors.primary,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 3,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: colors.primary,
+                pointHoverBorderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: colors.backgroundColor,
+                    titleColor: colors.textColor,
+                    bodyColor: colors.textColor,
+                    borderColor: colors.gridColor,
+                    borderWidth: 1,
+                    padding: 12,
+                    bodyFont: { size: 14 },
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { 
+                        color: colors.gridColor,
+                        drawBorder: false
+                    },
+                    ticks: { 
+                        color: colors.textColor,
+                        stepSize: 1,
+                        font: { size: 12 }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { 
+                        color: colors.textColor,
+                        font: { size: 12 }
+                    }
+                }
+            }
+        }
+    });
+
+    // Actualizar estadísticas del footer
+    const total = datos.reduce((a, b) => a + b, 0);
+    const mesPicoIndex = datos.indexOf(Math.max(...datos));
+    const mesPico = meses[mesPicoIndex];
+    const promedio = total > 0 ? (total / 12).toFixed(1) : 0;
+    
+    document.getElementById('totalAnual').textContent = formatNumber(total);
+    document.getElementById('mesPico').textContent = mesPico;
+    document.getElementById('promedioMensual').textContent = promedio;
+}
+
+// ===============================================
+// TOP 5 INSTITUCIONES
+// ===============================================
+
+/**
+ * Renderiza ranking de top instituciones
+ */
+function renderTopInstituciones(instituciones) {
+    const container = document.getElementById('topInstituciones');
+    if (!container) return;
+
+    // Ordenar por cantidad de convenios
+    const top5 = [...instituciones]
+        .sort((a, b) => (b.cant_convenios || 0) - (a.cant_convenios || 0))
+        .slice(0, 5);
+
+    if (top5.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">No hay datos disponibles</p>';
+        return;
+    }
+
+    const maxConvenios = Math.max(...top5.map(i => i.cant_convenios || 0));
+
+    container.innerHTML = top5.map((inst, index) => {
+        const percentage = maxConvenios > 0 ? ((inst.cant_convenios || 0) / maxConvenios) * 100 : 0;
+        return `
+            <div class="ranking-item">
+                <div class="ranking-position">${index + 1}</div>
+                <div class="ranking-info">
+                    <div class="ranking-name" title="${inst.nombre_institucion}">
+                        ${inst.nombre_institucion}
+                    </div>
+                    <div class="ranking-bar">
+                        <div class="ranking-progress" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+                <div class="ranking-value">${inst.cant_convenios || 0}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ===============================================
+// GRÁFICO DE ESTADO
+// ===============================================
+
+/**
+ * Renderiza gráfico de estado de convenios - MEJORADO
+ */
+function renderEstadoChart(convenios) {
+    const canvas = document.getElementById('chartEstado');
+    if (!canvas) return;
+
+    const colors = getThemeColors();
+    destroyChart('estado');
 
     // Agrupar por estado
     const estados = {};
@@ -177,61 +377,76 @@ function renderChartConveniosEstado(convenios) {
 
     const labels = Object.keys(estados);
     const data = Object.values(estados);
+    const bgColors = [colors.info, colors.warning, colors.success, colors.danger, colors.purple];
 
-    // Colores
-    const colors = [
-        'rgba(54, 162, 235, 0.8)',
-        'rgba(255, 206, 86, 0.8)',
-        'rgba(255, 99, 132, 0.8)',
-        'rgba(75, 192, 192, 0.8)',
-        'rgba(153, 102, 255, 0.8)'
-    ];
-
-    destroyChart('conveniosEstado');
-    chartsInstances['conveniosEstado'] = new Chart(ctx, {
-        type: 'pie',
+    chartsInstances['estado'] = new Chart(canvas, {
+        type: 'doughnut',
         data: {
             labels: labels,
             datasets: [{
                 data: data,
-                backgroundColor: colors,
-                borderWidth: 2,
-                borderColor: '#fff'
+                backgroundColor: bgColors,
+                borderWidth: 3,
+                borderColor: colors.backgroundColor,
+                hoverOffset: 15
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'right',
+                    labels: { 
+                        color: colors.textColor,
+                        padding: 20,
+                        font: { size: 13, weight: '500' },
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
                 },
                 tooltip: {
+                    backgroundColor: colors.backgroundColor,
+                    titleColor: colors.textColor,
+                    bodyColor: colors.textColor,
+                    borderColor: colors.gridColor,
+                    borderWidth: 1,
+                    padding: 12,
+                    bodyFont: { size: 14 },
                     callbacks: {
                         label: function(context) {
-                            const label = context.label || '';
-                            const value = context.parsed || 0;
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `${label}: ${value} (${percentage}%)`;
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return `${context.label}: ${context.parsed} (${percentage}%)`;
                         }
                     }
                 }
             }
         }
     });
+
+    // Actualizar estadísticas del footer
+    const total = data.reduce((a, b) => a + b, 0);
+    const masComun = labels[data.indexOf(Math.max(...data))];
+    
+    document.getElementById('totalEstado').textContent = formatNumber(total);
+    document.getElementById('estadoMasComun').textContent = masComun || '-';
 }
 
+// ===============================================
+// GRÁFICO DE TIPO
+// ===============================================
+
 /**
- * Renderiza gráfico de convenios por tipo (Bar Chart)
+ * Renderiza gráfico de tipo de convenios - MEJORADO
  */
-function renderChartConveniosTipo(convenios) {
-    const canvas = document.getElementById('chartConveniosTipo');
+function renderTipoChart(convenios) {
+    const canvas = document.getElementById('chartTipo');
     if (!canvas) return;
 
-    const container = canvas.parentElement;
-    container.innerHTML = '<canvas id="chartConveniosTipoCanvas"></canvas>';
-    const ctx = document.getElementById('chartConveniosTipoCanvas').getContext('2d');
+    const colors = getThemeColors();
+    destroyChart('tipo');
 
     // Agrupar por tipo
     const tipos = {};
@@ -243,145 +458,296 @@ function renderChartConveniosTipo(convenios) {
     const labels = Object.keys(tipos);
     const data = Object.values(tipos);
 
-    destroyChart('conveniosTipo');
-    chartsInstances['conveniosTipo'] = new Chart(ctx, {
+    // Colores degradados para cada barra
+    const backgroundColors = data.map((_, i) => {
+        const hue = (i * 137.5) % 360; // Golden angle
+        return `hsl(${hue}, 70%, 50%)`;
+    });
+
+    chartsInstances['tipo'] = new Chart(canvas, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Cantidad de Convenios',
+                label: 'Cantidad',
                 data: data,
-                backgroundColor: 'rgba(75, 192, 192, 0.7)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 2
+                backgroundColor: backgroundColors,
+                borderColor: backgroundColors.map(c => c.replace('50%', '40%')),
+                borderWidth: 2,
+                borderRadius: 10,
+                borderSkipped: false
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
             plugins: {
-                legend: {
-                    display: false
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: colors.backgroundColor,
+                    titleColor: colors.textColor,
+                    bodyColor: colors.textColor,
+                    borderColor: colors.gridColor,
+                    borderWidth: 1,
+                    padding: 12,
+                    bodyFont: { size: 14 }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
+                    grid: { 
+                        color: colors.gridColor,
+                        drawBorder: false
+                    },
+                    ticks: { 
+                        color: colors.textColor,
+                        stepSize: 1,
+                        font: { size: 12 }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { 
+                        color: colors.textColor,
+                        font: { size: 12 }
                     }
                 }
             }
         }
     });
+
+    // Actualizar estadísticas del footer
+    const total = data.reduce((a, b) => a + b, 0);
+    
+    document.getElementById('totalTipo').textContent = formatNumber(total);
+    document.getElementById('totalCategorias').textContent = labels.length;
 }
 
+// ===============================================
+// GRÁFICO DE MUNICIPIOS
+// ===============================================
+
 /**
- * Renderiza gráfico de instituciones por municipio (Bar Chart Horizontal)
+ * Renderiza gráfico de distribución por municipios - MEJORADO
  */
-function renderChartInstitucionesMunicipio(instituciones) {
-    const canvas = document.getElementById('chartInstitucionesMunicipio');
+function renderMunicipiosChart(instituciones, convenios) {
+    const canvas = document.getElementById('chartMunicipios');
     if (!canvas) return;
 
-    const container = canvas.parentElement;
-    container.innerHTML = '<canvas id="chartInstitucionesMunicipioCanvas"></canvas>';
-    const ctx = document.getElementById('chartInstitucionesMunicipioCanvas').getContext('2d');
+    const colors = getThemeColors();
+    destroyChart('municipios');
 
-    // Agrupar por municipio
-    const municipios = {};
-    instituciones.forEach(i => {
-        const municipio = i.id_municipio || 'Sin Municipio';
-        municipios[municipio] = (municipios[municipio] || 0) + 1;
+    let municipios = {};
+    let labels, data, label, bgColor;
+
+    if (currentMunicipiosView === 'instituciones') {
+        // Vista de instituciones por municipio
+        instituciones.forEach(i => {
+            const municipio = i.id_municipio || 'Sin Municipio';
+            municipios[municipio] = (municipios[municipio] || 0) + 1;
+        });
+        label = 'Instituciones';
+        bgColor = colors.danger;
+    } else {
+        // Vista de convenios por municipio (a través de instituciones)
+        convenios.forEach(c => {
+            const institucion = instituciones.find(i => i.nit_institucion === c.nit_institucion);
+            if (institucion) {
+                const municipio = institucion.id_municipio || 'Sin Municipio';
+                municipios[municipio] = (municipios[municipio] || 0) + 1;
+            }
+        });
+        label = 'Convenios';
+        bgColor = colors.primary;
+    }
+
+    // Ordenar por cantidad descendente
+    const sorted = Object.entries(municipios).sort((a, b) => b[1] - a[1]);
+    labels = sorted.map(([k]) => k);
+    data = sorted.map(([, v]) => v);
+
+    // Crear gradiente de colores
+    const backgroundColors = data.map((value, index) => {
+        const intensity = 0.5 + (value / Math.max(...data)) * 0.5;
+        return bgColor + Math.floor(intensity * 255).toString(16).padStart(2, '0');
     });
 
-    const labels = Object.keys(municipios);
-    const data = Object.values(municipios);
-
-    destroyChart('institucionesMunicipio');
-    chartsInstances['institucionesMunicipio'] = new Chart(ctx, {
+    chartsInstances['municipios'] = new Chart(canvas, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Número de Instituciones',
+                label: label,
                 data: data,
-                backgroundColor: 'rgba(255, 206, 86, 0.7)',
-                borderColor: 'rgba(255, 206, 86, 1)',
-                borderWidth: 2
+                backgroundColor: backgroundColors,
+                borderColor: bgColor,
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false
             }]
         },
         options: {
-            indexAxis: 'y', // Horizontal
+            indexAxis: 'y',
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
             plugins: {
-                legend: {
-                    display: false
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: colors.backgroundColor,
+                    titleColor: colors.textColor,
+                    bodyColor: colors.textColor,
+                    borderColor: colors.gridColor,
+                    borderWidth: 1,
+                    padding: 12,
+                    bodyFont: { size: 14 }
                 }
             },
             scales: {
                 x: {
                     beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
+                    grid: { 
+                        color: colors.gridColor,
+                        drawBorder: false
+                    },
+                    ticks: { 
+                        color: colors.textColor,
+                        stepSize: 1,
+                        font: { size: 12 }
+                    }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { 
+                        color: colors.textColor,
+                        font: { size: 12 }
                     }
                 }
             }
         }
     });
+
+    // Actualizar estadísticas del footer
+    const total = labels.length;
+    const masActivo = labels.length > 0 ? labels[0] : '-';
+    const promedio = data.length > 0 ? (data.reduce((a, b) => a + b, 0) / data.length).toFixed(1) : 0;
+    
+    document.getElementById('totalMunicipios').textContent = total;
+    document.getElementById('municipioActivo').textContent = masActivo;
+    document.getElementById('promedioMunicipios').textContent = promedio;
 }
 
 /**
- * Renderiza gráfico de homologaciones por nivel (Doughnut Chart)
+ * Cambia la vista del gráfico de municipios
  */
-function renderChartHomologacionesNivel(homologaciones) {
-    const canvas = document.getElementById('chartHomologacionesNivel');
-    if (!canvas) return;
+window.toggleMunicipiosView = function(view) {
+    currentMunicipiosView = view;
+    
+    // Actualizar estado de botones
+    document.getElementById('viewInstituciones').classList.toggle('active', view === 'instituciones');
+    document.getElementById('viewConvenios').classList.toggle('active', view === 'convenios');
+    
+    // Re-renderizar gráfico
+    renderMunicipiosChart(estadisticasCache.instituciones, estadisticasCache.convenios);
+}
 
-    const container = canvas.parentElement;
-    container.innerHTML = '<canvas id="chartHomologacionesNivelCanvas"></canvas>';
-    const ctx = document.getElementById('chartHomologacionesNivelCanvas').getContext('2d');
+/**
+ * Descarga un gráfico como imagen
+ */
+window.downloadChart = function(chartId, filename) {
+    // Extraer el nombre del chart desde el ID del canvas
+    let chartKey = '';
+    
+    if (chartId === 'chartTendencia') chartKey = 'tendencia';
+    else if (chartId === 'chartEstado') chartKey = 'estado';
+    else if (chartId === 'chartTipo') chartKey = 'tipo';
+    else if (chartId === 'chartMunicipios') chartKey = 'municipios';
+    
+    const chart = chartsInstances[chartKey];
+    if (!chart) {
+        console.error('No se encontró el gráfico:', chartKey);
+        return;
+    }
+    
+    const url = chart.toBase64Image();
+    const link = document.createElement('a');
+    link.download = `${filename}-${new Date().toISOString().split('T')[0]}.png`;
+    link.href = url;
+    link.click();
+}
 
-    // Agrupar por nivel
-    const niveles = {};
-    homologaciones.forEach(h => {
-        const nivel = h.nivel_programa || 'Sin Nivel';
-        niveles[nivel] = (niveles[nivel] || 0) + 1;
-    });
+// ===============================================
+// TABLA DE SUPERVISORES
+// ===============================================
 
-    const labels = Object.keys(niveles);
-    const data = Object.values(niveles);
+/**
+ * Renderiza tabla de carga de supervisores
+ */
+function renderTablaSupervisores(convenios) {
+    const tbody = document.getElementById('tablaSupervisores');
+    if (!tbody) return;
 
-    const colors = [
-        'rgba(153, 102, 255, 0.8)',
-        'rgba(255, 159, 64, 0.8)',
-        'rgba(54, 162, 235, 0.8)',
-        'rgba(255, 99, 132, 0.8)'
-    ];
+    // Agrupar por supervisor
+    const supervisores = {};
+    convenios.forEach(c => {
+        if (!c.supervisor) return;
+        
+        if (!supervisores[c.supervisor]) {
+            supervisores[c.supervisor] = {
+                activos: 0,
+                finalizados: 0,
+                total: 0
+            };
+        }
 
-    destroyChart('homologacionesNivel');
-    chartsInstances['homologacionesNivel'] = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: colors,
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
+        supervisores[c.supervisor].total++;
+        if (c.estado_convenio === 'Activo') {
+            supervisores[c.supervisor].activos++;
+        } else if (c.estado_convenio === 'Finalizado') {
+            supervisores[c.supervisor].finalizados++;
         }
     });
+
+    if (Object.keys(supervisores).length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-muted">
+                    No hay datos de supervisores disponibles
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const maxTotal = Math.max(...Object.values(supervisores).map(s => s.total));
+
+    tbody.innerHTML = Object.entries(supervisores)
+        .sort(([, a], [, b]) => b.total - a.total)
+        .slice(0, 10) // Top 10
+        .map(([nombre, data]) => {
+            const percentage = maxTotal > 0 ? (data.total / maxTotal) * 100 : 0;
+            return `
+                <tr>
+                    <td>${nombre}</td>
+                    <td><span class="badge bg-success">${data.activos}</span></td>
+                    <td><span class="badge bg-secondary">${data.finalizados}</span></td>
+                    <td><strong>${data.total}</strong></td>
+                    <td>
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        })
+        .join('');
 }
+
+// ===============================================
+// TABLA DETALLADA
+// ===============================================
 
 /**
  * Renderiza tabla de estadísticas detalladas
@@ -394,8 +760,9 @@ function renderTablaEstadisticas(estadisticas) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" class="text-center py-4">
-                    <p class="text-muted mb-0">No hay estadísticas disponibles en la base de datos</p>
-                    <small class="text-muted">Las estadísticas se generarán automáticamente según los datos del sistema</small>
+                    <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">No hay estadísticas disponibles</p>
+                    <small class="text-muted">Las estadísticas se generarán automáticamente</small>
                 </td>
             </tr>
         `;
@@ -404,15 +771,73 @@ function renderTablaEstadisticas(estadisticas) {
 
     tbody.innerHTML = estadisticas.map(stat => `
         <tr>
-            <td><span class="badge bg-primary">${stat.categoria || 'N/A'}</span></td>
+            <td>
+                <span class="badge" style="background: ${getCategoryColor(stat.categoria)}">
+                    ${stat.categoria || 'N/A'}
+                </span>
+            </td>
             <td>${stat.nombre || 'N/A'}</td>
             <td>${stat.subcategoria || '-'}</td>
-            <td class="text-end fw-bold">${formatNumber(stat.cantidad || 0)}</td>
+            <td class="text-end"><strong>${formatNumber(stat.cantidad || 0)}</strong></td>
             <td class="text-end">${stat.suma_total ? formatCurrency(stat.suma_total) : '-'}</td>
             <td class="text-center text-muted">${formatDate(stat.fecha_actualizacion)}</td>
         </tr>
     `).join('');
 }
+
+/**
+ * Obtiene color por categoría
+ */
+function getCategoryColor(categoria) {
+    const colors = {
+        'tipo_convenio': '#338702',
+        'estado_convenio': '#2196F3',
+        'persona_apoyo_fpi': '#FF9800',
+        'supervisor': '#9C27B0',
+        'municipio_convenios': '#F44336',
+        'modalidad_homologacion': '#4CAF50',
+        'nivel_programa': '#00BCD4',
+        'regional': '#FF5722'
+    };
+    return colors[categoria] || '#6C757D';
+}
+
+// ===============================================
+// FILTROS
+// ===============================================
+
+/**
+ * Aplica filtros
+ */
+async function aplicarFiltros() {
+    const categoria = document.getElementById('filterCategoria')?.value;
+    
+    if (!categoria) {
+        await cargarEstadisticas();
+        return;
+    }
+
+    try {
+        const estadisticas = await estadisticaService.getEstadisticasByCategoria(categoria);
+        renderTablaEstadisticas(estadisticas);
+    } catch (error) {
+        console.error('Error al aplicar filtros:', error);
+    }
+}
+
+/**
+ * Limpia filtros
+ */
+function limpiarFiltros() {
+    document.getElementById('filterFechaInicio').value = '';
+    document.getElementById('filterFechaFin').value = '';
+    document.getElementById('filterCategoria').value = '';
+    cargarEstadisticas();
+}
+
+// ===============================================
+// CARGA PRINCIPAL
+// ===============================================
 
 /**
  * Carga todas las estadísticas
@@ -424,81 +849,61 @@ async function cargarEstadisticas() {
             convenioService.getConvenios(),
             institucionService.getInstituciones(),
             homologacionService.getHomologaciones(),
-            estadisticaService.getAllEstadisticas().catch(() => []) // Capturar error si tabla está vacía
+            estadisticaService.getAllEstadisticas().catch(() => [])
         ]);
 
-        const stats = {
+        estadisticasCache = {
             convenios,
             instituciones,
             homologaciones,
             estadisticasDB
         };
 
-        // Renderizar componentes
-        renderResumenCards(stats);
-        renderChartConveniosEstado(convenios);
-        renderChartConveniosTipo(convenios);
-        renderChartInstitucionesMunicipio(instituciones);
-        renderChartHomologacionesNivel(homologaciones);
+        // Renderizar todos los componentes
+        renderKPICards(estadisticasCache);
+        renderTendenciaChart(convenios);
+        renderTopInstituciones(instituciones);
+        renderEstadoChart(convenios);
+        renderTipoChart(convenios);
+        renderMunicipiosChart(instituciones, convenios);
+        renderTablaSupervisores(convenios);
         renderTablaEstadisticas(estadisticasDB);
 
-        estadisticasCache = stats;
+        console.log('✅ Estadísticas cargadas correctamente');
 
     } catch (error) {
-        console.error('Error al cargar estadísticas:', error);
-        showErrorModal(
-            'Error al Cargar Estadísticas',
-            error.message || 'No se pudieron cargar las estadísticas del sistema.'
-        );
+        console.error('❌ Error al cargar estadísticas:', error);
     }
 }
 
-/**
- * Aplica filtros de categoría
- */
-async function aplicarFiltros() {
-    const categoria = document.getElementById('filterCategoria').value;
-    const subcategoria = document.getElementById('filterSubcategoria').value;
-
-    if (!categoria && !subcategoria) {
-        // Sin filtros, recargar todo
-        await cargarEstadisticas();
-        return;
-    }
-
-    try {
-        let estadisticas;
-        if (categoria && !subcategoria) {
-            estadisticas = await estadisticaService.getEstadisticasByCategoria(categoria);
-        } else if (categoria && subcategoria) {
-            // Filtrar por ambos (hacer manualmente)
-            const todas = await estadisticaService.getEstadisticasByCategoria(categoria);
-            estadisticas = todas.filter(e => e.subcategoria === subcategoria);
-        } else {
-            estadisticas = await estadisticaService.getAllEstadisticas();
-        }
-
-        renderTablaEstadisticas(estadisticas);
-    } catch (error) {
-        console.error('Error al aplicar filtros:', error);
-        showErrorModal('Error al Filtrar', error.message || 'No se pudieron aplicar los filtros.');
-    }
-}
+// ===============================================
+// INICIALIZACIÓN
+// ===============================================
 
 /**
  * Inicializa la página de estadísticas
  */
 async function Init() {
-    console.log('Inicializando estadisticas.js');
+    console.log('🚀 Inicializando estadísticas mejoradas...');
 
-    // Configurar listeners
-    const btnAplicarFiltros = document.getElementById('btnAplicarFiltros');
-    if (btnAplicarFiltros) {
-        btnAplicarFiltros.addEventListener('click', aplicarFiltros);
-    }
+    // Event listeners
+    const btnAplicar = document.getElementById('btnAplicarFiltros');
+    const btnLimpiar = document.getElementById('btnLimpiarFiltros');
+
+    if (btnAplicar) btnAplicar.addEventListener('click', aplicarFiltros);
+    if (btnLimpiar) btnLimpiar.addEventListener('click', limpiarFiltros);
 
     // Cargar estadísticas
     await cargarEstadisticas();
+
+    // Actualizar gráficos al cambiar tema
+    if (window.themeManager) {
+        const originalToggle = window.themeManager.toggleTheme.bind(window.themeManager);
+        window.themeManager.toggleTheme = function() {
+            originalToggle();
+            setTimeout(() => cargarEstadisticas(), 100);
+        };
+    }
 }
 
 export { Init };

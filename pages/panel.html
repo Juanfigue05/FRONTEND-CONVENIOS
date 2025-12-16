@@ -1,57 +1,978 @@
-<div class="row">
-  <div class="col-12">
-    <div class="mb-4">
-      <h4 class="mb-0">Panel de Control</h4>
-      <p class="text-muted">Resumen general del sistema</p>
+<!-- Panel Principal Mejorado con Más Accesos Rápidos -->
+<div class="panel-wrapper">
+  <!-- Header del Panel -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="panel-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+          <div>
+            <h2 class="panel-title mb-2">
+              <i class="fas fa-chart-line me-2"></i>Panel de Control
+            </h2>
+            <p class="panel-subtitle mb-0">
+              <i class="far fa-calendar-alt me-2"></i>
+              <span id="currentDate"></span>
+            </p>
+          </div>
+          <div class="d-flex gap-2 mt-3 mt-md-0">
+            <button class="btn btn-outline-light btn-sm" id="refreshBtn">
+              <i class="fas fa-sync-alt me-2"></i>Actualizar
+            </button>
+            <button class="btn btn-outline-light btn-sm" id="exportBtn">
+              <i class="fas fa-download me-2"></i>Exportar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Tarjetas de Estadísticas -->
-<div class="row" id="estadisticas-cards">
-  <!-- Las estadísticas se cargarán dinámicamente aquí -->
-  <div class="col-12 text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
+  <!-- Tarjetas de Estadísticas Principales -->
+  <div class="row g-3 mb-4" id="estadisticas-cards">
+    <!-- Skeleton Loading -->
+    <div class="col-md-6 col-xl-3">
+      <div class="stat-card skeleton-card">
+        <div class="skeleton-shimmer"></div>
+      </div>
     </div>
-    <p class="mt-3 text-muted">Cargando estadísticas...</p>
+    <div class="col-md-6 col-xl-3">
+      <div class="stat-card skeleton-card">
+        <div class="skeleton-shimmer"></div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="stat-card skeleton-card">
+        <div class="skeleton-shimmer"></div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="stat-card skeleton-card">
+        <div class="skeleton-shimmer"></div>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Sección de Actividad Reciente (Opcional) -->
-<div class="row mt-4">
-  <div class="col-12">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title mb-3">
-          <i class="bi bi-clock-history"></i> Bienvenido al Sistema de Gestión de Convenios
-        </h5>
-        <p class="text-muted">
-          Utiliza el menú lateral para navegar entre las diferentes secciones del sistema.
-        </p>
-        <ul class="list-unstyled">
-          <li class="mb-2">
-            <i class="bi bi-check-circle text-success"></i> 
-            <strong>Usuarios:</strong> Gestiona los usuarios del sistema
-          </li>
-          <li class="mb-2">
-            <i class="bi bi-check-circle text-success"></i> 
-            <strong>Instituciones:</strong> Administra las instituciones educativas
-          </li>
-          <li class="mb-2">
-            <i class="bi bi-check-circle text-success"></i> 
-            <strong>Convenios:</strong> Gestiona los convenios institucionales
-          </li>
-          <li class="mb-2">
-            <i class="bi bi-check-circle text-success"></i> 
-            <strong>Homologaciones:</strong> Administra las homologaciones de programas
-          </li>
-          <li class="mb-2">
-            <i class="bi bi-check-circle text-success"></i> 
-            <strong>Municipios:</strong> Gestiona los municipios del sistema
-          </li>
-        </ul>
+  <!-- Accesos Rápidos Principales -->
+  <div class="row g-3 mb-4">
+    <div class="col-12">
+      <div class="card quick-access-main-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-bolt me-2 text-warning"></i>Accesos Rápidos
+            </h5>
+            <span class="badge bg-primary">Acciones Principales</span>
+          </div>
+          
+          <div class="quick-access-grid-large">
+            <!-- Nuevo Convenio -->
+            <div class="quick-access-item-large" data-page="convenios" data-action="create">
+              <div class="quick-access-icon-large bg-success-subtle">
+                <i class="fas fa-file-signature text-success"></i>
+              </div>
+              <div class="quick-access-info">
+                <h6>Nuevo Convenio</h6>
+                <small class="text-muted">Registrar convenio</small>
+              </div>
+              <i class="fas fa-chevron-right quick-access-arrow"></i>
+            </div>
+
+            <!-- Nueva Institución -->
+            <div class="quick-access-item-large" data-page="instituciones" data-action="create">
+              <div class="quick-access-icon-large bg-primary-subtle">
+                <i class="fas fa-building text-primary"></i>
+              </div>
+              <div class="quick-access-info">
+                <h6>Nueva Institución</h6>
+                <small class="text-muted">Agregar institución</small>
+              </div>
+              <i class="fas fa-chevron-right quick-access-arrow"></i>
+            </div>
+
+            <!-- Nueva Homologación -->
+            <div class="quick-access-item-large" data-page="homologaciones" data-action="create">
+              <div class="quick-access-icon-large bg-warning-subtle">
+                <i class="fas fa-graduation-cap text-warning"></i>
+              </div>
+              <div class="quick-access-info">
+                <h6>Nueva Homologación</h6>
+                <small class="text-muted">Registrar homologación</small>
+              </div>
+              <i class="fas fa-chevron-right quick-access-arrow"></i>
+            </div>
+
+            <!-- Nuevo Usuario -->
+            <div class="quick-access-item-large" data-page="usuarios" data-action="create">
+              <div class="quick-access-icon-large bg-info-subtle">
+                <i class="fas fa-user-plus text-info"></i>
+              </div>
+              <div class="quick-access-info">
+                <h6>Nuevo Usuario</h6>
+                <small class="text-muted">Crear usuario</small>
+              </div>
+              <i class="fas fa-chevron-right quick-access-arrow"></i>
+            </div>
+
+            <!-- Nuevo Municipio -->
+            <div class="quick-access-item-large" data-page="municipios" data-action="create">
+              <div class="quick-access-icon-large bg-danger-subtle">
+                <i class="fas fa-map-marker-alt text-danger"></i>
+              </div>
+              <div class="quick-access-info">
+                <h6>Nuevo Municipio</h6>
+                <small class="text-muted">Agregar municipio</small>
+              </div>
+              <i class="fas fa-chevron-right quick-access-arrow"></i>
+            </div>
+
+            <!-- Ver Estadísticas -->
+            <div class="quick-access-item-large" data-page="estadisticas">
+              <div class="quick-access-icon-large bg-purple-subtle">
+                <i class="fas fa-chart-pie text-purple"></i>
+              </div>
+              <div class="quick-access-info">
+                <h6>Estadísticas</h6>
+                <small class="text-muted">Ver análisis</small>
+              </div>
+              <i class="fas fa-chevron-right quick-access-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos y Análisis -->
+  <div class="row g-3 mb-4">
+    <!-- Gráfico de Convenios -->
+    <div class="col-lg-8">
+      <div class="card chart-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-chart-bar me-2 text-primary"></i>Resumen de Convenios
+            </h5>
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-outline-secondary active" data-period="month">Mes</button>
+              <button type="button" class="btn btn-outline-secondary" data-period="year">Año</button>
+            </div>
+          </div>
+          <canvas id="conveniosChart" style="max-height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Instituciones -->
+    <div class="col-lg-4">
+      <div class="card chart-card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="fas fa-trophy me-2 text-warning"></i>Top Instituciones
+          </h5>
+          <div id="topInstituciones" class="top-list">
+            <!-- Se carga dinámicamente -->
+            <div class="text-center py-4">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navegación por Módulos -->
+  <div class="row g-3 mb-4">
+    <div class="col-12">
+      <div class="card modules-card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="fas fa-th-large me-2 text-primary"></i>Módulos del Sistema
+          </h5>
+          
+          <div class="modules-grid">
+            <!-- Convenios -->
+            <div class="module-item" data-page="convenios">
+              <div class="module-header bg-success">
+                <i class="fas fa-handshake"></i>
+              </div>
+              <div class="module-body">
+                <h6>Convenios</h6>
+                <p class="text-muted small">Gestión de convenios institucionales</p>
+                <div class="module-stats">
+                  <span class="badge bg-success-subtle text-success" id="module-convenios-count">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instituciones -->
+            <div class="module-item" data-page="instituciones">
+              <div class="module-header bg-primary">
+                <i class="fas fa-building-columns"></i>
+              </div>
+              <div class="module-body">
+                <h6>Instituciones</h6>
+                <p class="text-muted small">Administración de instituciones</p>
+                <div class="module-stats">
+                  <span class="badge bg-primary-subtle text-primary" id="module-instituciones-count">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Homologaciones -->
+            <div class="module-item" data-page="homologaciones">
+              <div class="module-header bg-warning">
+                <i class="fas fa-graduation-cap"></i>
+              </div>
+              <div class="module-body">
+                <h6>Homologaciones</h6>
+                <p class="text-muted small">Control de homologaciones</p>
+                <div class="module-stats">
+                  <span class="badge bg-warning-subtle text-warning" id="module-homologaciones-count">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Municipios -->
+            <div class="module-item" data-page="municipios">
+              <div class="module-header bg-danger">
+                <i class="fas fa-map-location-dot"></i>
+              </div>
+              <div class="module-body">
+                <h6>Municipios</h6>
+                <p class="text-muted small">Gestión de municipios</p>
+                <div class="module-stats">
+                  <span class="badge bg-danger-subtle text-danger" id="module-municipios-count">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="module-item" data-page="estadisticas">
+              <div class="module-header bg-info">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="module-body">
+                <h6>Estadísticas</h6>
+                <p class="text-muted small">Análisis y reportes</p>
+                <div class="module-stats">
+                  <span class="badge bg-info-subtle text-info">
+                    <i class="fas fa-chart-bar"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Usuarios -->
+            <div class="module-item" data-page="usuarios">
+              <div class="module-header bg-purple">
+                <i class="fas fa-users-gear"></i>
+              </div>
+              <div class="module-body">
+                <h6>Usuarios</h6>
+                <p class="text-muted small">Administrar usuarios</p>
+                <div class="module-stats">
+                  <span class="badge bg-purple-subtle text-purple" id="module-usuarios-count">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actividad Reciente y Información del Sistema -->
+  <div class="row g-3">
+    <!-- Actividad Reciente -->
+    <div class="col-lg-7">
+      <div class="card activity-card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="fas fa-clock me-2 text-info"></i>Actividad Reciente
+          </h5>
+          <div class="activity-timeline" id="activityTimeline">
+            <!-- Se carga dinámicamente -->
+            <div class="timeline-item">
+              <div class="timeline-marker bg-success"></div>
+              <div class="timeline-content">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <p class="mb-1"><strong>Nuevo convenio registrado</strong></p>
+                    <p class="text-muted small mb-0">Universidad Nacional de Colombia</p>
+                  </div>
+                  <span class="badge bg-success-subtle text-success">Hace 2h</span>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker bg-primary"></div>
+              <div class="timeline-content">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <p class="mb-1"><strong>Homologación aprobada</strong></p>
+                    <p class="text-muted small mb-0">Tecnología en Sistemas</p>
+                  </div>
+                  <span class="badge bg-primary-subtle text-primary">Hace 5h</span>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker bg-warning"></div>
+              <div class="timeline-content">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <p class="mb-1"><strong>Nueva institución agregada</strong></p>
+                    <p class="text-muted small mb-0">Instituto Técnico Superior</p>
+                  </div>
+                  <span class="badge bg-warning-subtle text-warning">Ayer</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información del Sistema -->
+    <div class="col-lg-5">
+      <div class="card system-info-card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="fas fa-info-circle me-2 text-primary"></i>Información del Sistema
+          </h5>
+          
+          <!-- Estado del Sistema -->
+          <div class="system-status mb-4">
+            <div class="status-item">
+              <div class="status-icon bg-success-subtle">
+                <i class="fas fa-check-circle text-success"></i>
+              </div>
+              <div class="status-info">
+                <h6 class="mb-0">Sistema Operativo</h6>
+                <small class="text-muted">Todos los servicios activos</small>
+              </div>
+            </div>
+            
+            <div class="status-item">
+              <div class="status-icon bg-info-subtle">
+                <i class="fas fa-database text-info"></i>
+              </div>
+              <div class="status-info">
+                <h6 class="mb-0">Base de Datos</h6>
+                <small class="text-muted">Actualizada correctamente</small>
+              </div>
+            </div>
+            
+            <div class="status-item">
+              <div class="status-icon bg-primary-subtle">
+                <i class="fas fa-shield-alt text-primary"></i>
+              </div>
+              <div class="status-info">
+                <h6 class="mb-0">Última Copia</h6>
+                <small class="text-muted">Hoy a las 3:00 AM</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acciones Rápidas Adicionales -->
+          <div class="quick-actions">
+            <h6 class="text-muted mb-3">
+              <i class="fas fa-tools me-2"></i>Herramientas
+            </h6>
+            <div class="d-flex flex-column gap-2">
+              <button class="btn btn-outline-primary btn-sm" data-page="estadisticas">
+                <i class="fas fa-chart-bar me-2"></i>Ver Reportes Completos
+              </button>
+              <button class="btn btn-outline-success btn-sm" id="exportAllBtn">
+                <i class="fas fa-file-excel me-2"></i>Exportar Todo
+              </button>
+              <button class="btn btn-outline-info btn-sm" id="backupBtn">
+                <i class="fas fa-cloud-download-alt me-2"></i>Respaldo Manual
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+/* ===== Panel Wrapper ===== */
+.panel-wrapper {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Panel Header ===== */
+.panel-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  padding: 2rem;
+  border-radius: 16px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(51, 135, 2, 0.15);
+}
+
+.panel-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.panel-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+}
+
+.btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+/* ===== Stat Cards ===== */
+.stat-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color);
+}
+
+.stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* ===== Quick Access Main Card ===== */
+.quick-access-main-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.quick-access-grid-large {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.quick-access-item-large {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+  gap: 1rem;
+}
+
+.quick-access-item-large:hover {
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(51, 135, 2, 0.15);
+}
+
+.quick-access-icon-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.quick-access-info {
+  flex: 1;
+}
+
+.quick-access-info h6 {
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.quick-access-info small {
+  color: var(--text-secondary);
+}
+
+.quick-access-arrow {
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.quick-access-item-large:hover .quick-access-arrow {
+  transform: translateX(5px);
+  color: var(--primary-color);
+}
+
+/* ===== Modules Grid ===== */
+.modules-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.module-item {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.module-item:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.module-header {
+  padding: 1.5rem;
+  text-align: center;
+  color: white;
+  font-size: 2rem;
+}
+
+.module-body {
+  padding: 1.25rem;
+}
+
+.module-body h6 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.module-body p {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+}
+
+.module-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===== System Info Card ===== */
+.system-info-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  height: 100%;
+}
+
+.system-status {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.status-item:hover {
+  background: var(--hover-bg);
+  transform: translateX(3px);
+}
+
+.status-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.status-info h6 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.status-info small {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+/* ===== Chart Cards ===== */
+.chart-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.chart-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Top List ===== */
+.top-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.top-item {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem;
+  margin-bottom: 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.top-item:hover {
+  background: var(--hover-bg);
+  transform: translateX(5px);
+}
+
+.top-rank {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.top-rank.gold {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #fff;
+}
+
+.top-rank.silver {
+  background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+  color: #fff;
+}
+
+.top-rank.bronze {
+  background: linear-gradient(135deg, #CD7F32, #B8860B);
+  color: #fff;
+}
+
+.top-rank.default {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 2px solid var(--border-color);
+}
+
+/* ===== Activity Timeline ===== */
+.activity-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  height: 100%;
+}
+
+.activity-timeline {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 30px;
+  bottom: -20px;
+  width: 2px;
+  background: var(--border-color);
+}
+
+.timeline-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 4px var(--card-bg);
+}
+
+.timeline-content {
+  flex: 1;
+  background: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.timeline-content:hover {
+  background: var(--hover-bg);
+  transform: translateX(3px);
+}
+
+/* ===== Color Utilities ===== */
+.bg-purple {
+  background: linear-gradient(135deg, #9C27B0, #BA68C8);
+}
+
+.bg-purple-subtle {
+  background-color: rgba(156, 39, 176, 0.1);
+}
+
+.text-purple {
+  color: #9C27B0;
+}
+
+/* ===== Skeleton Loading ===== */
+.skeleton-card {
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--hover-bg) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  min-height: 180px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Scrollbar Custom ===== */
+.activity-timeline::-webkit-scrollbar,
+.top-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activity-timeline::-webkit-scrollbar-track,
+.top-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.activity-timeline::-webkit-scrollbar-thumb,
+.top-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+.activity-timeline::-webkit-scrollbar-thumb:hover,
+.top-list::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .panel-header {
+    padding: 1.5rem;
+  }
+  
+  .panel-title {
+    font-size: 1.5rem;
+  }
+  
+  .quick-access-grid-large {
+    grid-template-columns: 1fr;
+  }
+  
+  .modules-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+  
+  .quick-access-item-large {
+    padding: 1rem;
+  }
+}
+
+/* ===== Dark Mode Improvements ===== */
+[data-theme="dark"] .panel-header {
+  box-shadow: 0 4px 20px rgba(51, 135, 2, 0.25);
+}
+
+[data-theme="dark"] .stat-card:hover {
+  box-shadow: 0 12px 24px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .timeline-marker {
+  box-shadow: 0 0 0 4px var(--card-bg);
+}
+</style>
+
+<script>
+// Fecha actual
+const currentDateEl = document.getElementById('currentDate');
+if (currentDateEl) {
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  currentDateEl.textContent = new Date().toLocaleDateString('es-ES', options);
+}
+
+// Botón de refrescar
+document.getElementById('refreshBtn')?.addEventListener('click', function() {
+  const icon = this.querySelector('i');
+  icon.classList.add('fa-spin');
+  
+  setTimeout(() => {
+    icon.classList.remove('fa-spin');
+    if (window.panelModule && window.panelModule.Init) {
+      window.panelModule.Init();
+    }
+  }, 1000);
+});
+
+// Botón de exportar
+document.getElementById('exportBtn')?.addEventListener('click', function() {
+  alert('Funcionalidad de exportación próximamente');
+});
+
+// Botón de exportar todo
+document.getElementById('exportAllBtn')?.addEventListener('click', function() {
+  alert('Exportando todos los datos del sistema...');
+});
+
+// Botón de backup
+document.getElementById('backupBtn')?.addEventListener('click', function() {
+  alert('Iniciando respaldo manual del sistema...');
+});
+
+// Accesos rápidos con acción create
+document.querySelectorAll('.quick-access-item-large[data-action="create"]').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const page = this.dataset.page;
+    
+    // Navegar a la página
+    const menuLink = document.querySelector(`.sidebar-menu a[data-page="${page}"]`);
+    if (menuLink) {
+      menuLink.click();
+    }
+    
+    // Esperar a que cargue y abrir modal de crear
+    setTimeout(() => {
+      let modalId = '';
+      switch(page) {
+        case 'convenios':
+          modalId = 'createConvenioModal';
+          break;
+        case 'instituciones':
+          modalId = 'createInstitucionModal';
+          break;
+        case 'homologaciones':
+          modalId = 'createHomologacionModal';
+          break;
+        case 'usuarios':
+          modalId = 'createUserModal';
+          break;
+        case 'municipios':
+          modalId = 'createMunicipioModal';
+          break;
+      }
+      
+      if (modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          const bsModal = new bootstrap.Modal(modal);
+          bsModal.show();
+        }
+      }
+    }, 500);
+  });
+});
+
+// Accesos rápidos sin acción (solo navegación)
+document.querySelectorAll('.quick-access-item-large:not([data-action])').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const page = this.dataset.page;
+    const menuLink = document.querySelector(`.sidebar-menu a[data-page="${page}"]`);
+    if (menuLink) {
+      menuLink.click();
+    }
+  });
+});
+
+// Módulos del sistema
+document.querySelectorAll('.module-item').forEach(item => {
+  item.addEventListener('click', function() {
+    const page = this.dataset.page;
+    const menuLink = document.querySelector(`.sidebar-menu a[data-page="${page}"]`);
+    if (menuLink) {
+      menuLink.click();
+    }
+  });
+});
+
+// Herramientas rápidas
+document.querySelectorAll('.quick-actions button[data-page]').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const page = this.dataset.page;
+    const menuLink = document.querySelector(`.sidebar-menu a[data-page="${page}"]`);
+    if (menuLink) {
+      menuLink.click();
+    }
+  });
+});
+</script>

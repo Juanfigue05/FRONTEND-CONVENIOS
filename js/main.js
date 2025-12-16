@@ -17,10 +17,10 @@ navLinks?.addEventListener('click', (event) => {
  * Mapeo de páginas y sus módulos correspondientes
  */
 const pageModules = {
-    'panel': () => import('./pages/panel.js'),
+    'panel': () => import('./pages/panel.js'),        
     'convenios': () => import('./pages/convenios.js'),
     'instituciones': () => import('./pages/instituciones.js'),
-    'homologaciones': () => import('./pages/homologacion.js'),
+    'homologaciones': () => import('./pages/homologacion.js'),  
     'municipios': () => import('./pages/municipios.js'),
     'estadisticas': () => import('./pages/estadisticas.js'),
     'usuarios': () => import('./pages/usuarios.js')

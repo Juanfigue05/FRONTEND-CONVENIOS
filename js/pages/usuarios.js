@@ -1,4 +1,4 @@
-import { userService } from '../api/user_service.js';
+import { userService } from '../api/user.service.js';
 
 let usuariosData = [];
 let usuariosFiltrados = [];

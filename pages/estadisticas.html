@@ -1,70 +1,247 @@
-<div class="row">
-  <div class="col-12">
-    <div class="mb-4">
-      <h4 class="mb-0">Estadísticas del Sistema</h4>
-      <p class="text-muted">Análisis y métricas del sistema de gestión de convenios</p>
+<div class="estadisticas-container">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="dashboard-header-modern">
+        <h2 class="dashboard-title-modern">📊 Estadísticas del Sistema</h2>
+        <p class="dashboard-subtitle-modern">Análisis y métricas del sistema de gestión de convenios</p>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Filtros de Estadísticas -->
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="card">
-      <div class="card-body">
-        <div class="row align-items-end">
-          <div class="col-md-4 mb-3 mb-md-0">
-            <label for="filterCategoria" class="form-label">Filtrar por Categoría</label>
-            <select class="form-select" id="filterCategoria">
-              <option value="">Todas las categorías</option>
-              <option value="convenios">Convenios</option>
-              <option value="instituciones">Instituciones</option>
-              <option value="homologaciones">Homologaciones</option>
-              <option value="usuarios">Usuarios</option>
-            </select>
+  <!-- KPIs Hero Section con Mini Gráficos -->
+  <div class="row g-4 mb-4" id="kpi-cards">
+    <div class="col-xl-3 col-md-6">
+      <div class="kpi-card kpi-primary">
+        <div class="kpi-content">
+          <div class="kpi-header">
+            <div class="kpi-icon">
+              <i class="fas fa-file-contract"></i>
+            </div>
+            <div class="kpi-trend positive">
+              <i class="fas fa-arrow-up"></i> 12%
+            </div>
           </div>
-          <div class="col-md-4 mb-3 mb-md-0">
-            <label for="filterSubcategoria" class="form-label">Subcategoría</label>
-            <select class="form-select" id="filterSubcategoria">
-              <option value="">Todas</option>
-            </select>
+          <div class="kpi-body">
+            <h3 class="kpi-number" id="kpi-convenios">37</h3>
+            <p class="kpi-label">Total Convenios</p>
           </div>
-          <div class="col-md-4">
-            <button type="button" class="btn btn-primary w-100" id="btnAplicarFiltros">
-              <i class="bi bi-search"></i> Buscar
+          <div class="kpi-footer">
+            <canvas id="sparkline-convenios" height="40"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="kpi-card kpi-info">
+        <div class="kpi-content">
+          <div class="kpi-header">
+            <div class="kpi-icon">
+              <i class="fas fa-building"></i>
+            </div>
+            <div class="kpi-trend positive">
+              <i class="fas fa-arrow-up"></i> 5%
+            </div>
+          </div>
+          <div class="kpi-body">
+            <h3 class="kpi-number" id="kpi-instituciones">26</h3>
+            <p class="kpi-label">Instituciones</p>
+          </div>
+          <div class="kpi-footer">
+            <canvas id="sparkline-instituciones" height="40"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="kpi-card kpi-warning">
+        <div class="kpi-content">
+          <div class="kpi-header">
+            <div class="kpi-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="kpi-trend positive">
+              <i class="fas fa-arrow-up"></i> 15%
+            </div>
+          </div>
+          <div class="kpi-body">
+            <h3 class="kpi-number" id="kpi-homologaciones">3</h3>
+            <p class="kpi-label">Homologaciones</p>
+          </div>
+          <div class="kpi-footer">
+            <canvas id="sparkline-homologaciones" height="40"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="kpi-card kpi-success">
+        <div class="kpi-content">
+          <div class="kpi-header">
+            <div class="kpi-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="kpi-trend positive">
+              <i class="fas fa-arrow-up"></i> 8%
+            </div>
+          </div>
+          <div class="kpi-body">
+            <h3 class="kpi-number" id="kpi-valor">$0</h3>
+            <p class="kpi-label">Valor Estimado</p>
+          </div>
+          <div class="kpi-footer">
+            <canvas id="sparkline-valor" height="40"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alertas y Notificaciones -->
+  <div class="row mb-4" id="alerts-section">
+    <div class="col-12">
+      <div class="alert-card">
+        <div class="alert-header">
+          <i class="fas fa-bell"></i>
+          <h5>Alertas y Notificaciones</h5>
+        </div>
+        <div class="alert-body" id="alerts-container">
+          <div class="alert-item warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>5 convenios próximos a vencer en los próximos 30 días</span>
+          </div>
+          <div class="alert-item success">
+            <i class="fas fa-check-circle"></i>
+            <span>12 convenios renovados este mes</span>
+          </div>
+          <div class="alert-item info">
+            <i class="fas fa-info-circle"></i>
+            <span>3 nuevas instituciones registradas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos Principales - MEJORADOS -->
+  <div class="row g-4 mb-4">
+    <!-- Tendencia Temporal -->
+    <div class="col-lg-8">
+      <div class="chart-card chart-card-large">
+        <div class="chart-header">
+          <div class="chart-title">
+            <i class="fas fa-chart-line text-primary"></i>
+            <h5>Tendencia Anual de Convenios</h5>
+          </div>
+          <div class="chart-actions">
+            <button class="btn btn-sm btn-outline-primary" onclick="downloadChart('chartTendencia', 'tendencia-convenios')">
+              <i class="fas fa-download"></i>
             </button>
           </div>
         </div>
+        <div class="chart-body chart-body-large">
+          <canvas id="chartTendencia"></canvas>
+        </div>
+        <div class="chart-footer">
+          <div class="chart-stats">
+            <div class="stat-item">
+              <span class="stat-label">Total Anual</span>
+              <span class="stat-value" id="totalAnual">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Mes Pico</span>
+              <span class="stat-value" id="mesPico">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Promedio Mensual</span>
+              <span class="stat-value" id="promedioMensual">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 5 Instituciones -->
+    <div class="col-lg-4">
+      <div class="chart-card chart-card-large">
+        <div class="chart-header">
+          <div class="chart-title">
+            <i class="fas fa-trophy text-warning"></i>
+            <h5>Top 5 Instituciones</h5>
+          </div>
+        </div>
+        <div class="chart-body chart-body-large d-flex flex-column justify-content-center">
+          <div class="ranking-list" id="topInstituciones">
+            <!-- Se llenará dinámicamente -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Tarjetas de Resumen -->
-<div class="row mb-4" id="resumen-cards">
-  <!-- Se llenarán dinámicamente -->
-  <div class="col-12 text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
+  <!-- Gráficos Secundarios - MEJORADOS -->
+  <div class="row g-4 mb-4">
+    <!-- Estado de Convenios -->
+    <div class="col-lg-6">
+      <div class="chart-card chart-card-large">
+        <div class="chart-header">
+          <div class="chart-title">
+            <i class="fas fa-chart-pie text-info"></i>
+            <h5>Estado de Convenios</h5>
+          </div>
+          <div class="chart-actions">
+            <button class="btn btn-sm btn-outline-primary" onclick="downloadChart('chartEstado', 'estado-convenios')">
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+        </div>
+        <div class="chart-body chart-body-large">
+          <canvas id="chartEstado"></canvas>
+        </div>
+        <div class="chart-footer">
+          <div class="chart-stats">
+            <div class="stat-item">
+              <span class="stat-label">Total</span>
+              <span class="stat-value" id="totalEstado">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Más común</span>
+              <span class="stat-value" id="estadoMasComun">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <p class="mt-3 text-muted">Cargando estadísticas...</p>
-  </div>
-</div>
 
-<!-- Gráficos -->
-<div class="row mb-4">
-  <!-- Gráfico de Convenios por Estado -->
-  <div class="col-md-6 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title mb-4">
-          <i class="bi bi-pie-chart-fill text-primary"></i> 
-          Convenios por Estado
-        </h5>
-        <div id="chartConveniosEstado" style="min-height: 300px;">
-          <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Cargando...</span>
+    <!-- Tipo de Convenios -->
+    <div class="col-lg-6">
+      <div class="chart-card chart-card-large">
+        <div class="chart-header">
+          <div class="chart-title">
+            <i class="fas fa-chart-bar text-success"></i>
+            <h5>Tipo de Convenios</h5>
+          </div>
+          <div class="chart-actions">
+            <button class="btn btn-sm btn-outline-success" onclick="downloadChart('chartTipo', 'tipo-convenios')">
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+        </div>
+        <div class="chart-body chart-body-large">
+          <canvas id="chartTipo"></canvas>
+        </div>
+        <div class="chart-footer">
+          <div class="chart-stats">
+            <div class="stat-item">
+              <span class="stat-label">Total</span>
+              <span class="stat-value" id="totalTipo">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Categorías</span>
+              <span class="stat-value" id="totalCategorias">0</span>
             </div>
           </div>
         </div>
@@ -72,60 +249,126 @@
     </div>
   </div>
 
-  <!-- Gráfico de Convenios por Tipo -->
-  <div class="col-md-6 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title mb-4">
-          <i class="bi bi-bar-chart-fill text-success"></i> 
-          Convenios por Tipo
-        </h5>
-        <div id="chartConveniosTipo" style="min-height: 300px;">
-          <div class="text-center py-5">
-            <div class="spinner-border text-success" role="status">
-              <span class="visually-hidden">Cargando...</span>
+  <!-- Distribución Geográfica - MEJORADA -->
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="chart-card chart-card-xlarge">
+        <div class="chart-header">
+          <div class="chart-title">
+            <i class="fas fa-map-marked-alt text-danger"></i>
+            <h5>Distribución por Municipio</h5>
+          </div>
+          <div class="chart-actions">
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-outline-secondary active" id="viewInstituciones" onclick="toggleMunicipiosView('instituciones')">
+                <i class="fas fa-building"></i> Instituciones
+              </button>
+              <button type="button" class="btn btn-outline-secondary" id="viewConvenios" onclick="toggleMunicipiosView('convenios')">
+                <i class="fas fa-file-contract"></i> Convenios
+              </button>
+            </div>
+            <button class="btn btn-sm btn-outline-danger ms-2" onclick="downloadChart('chartMunicipios', 'municipios')">
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+        </div>
+        <div class="chart-body chart-body-xlarge">
+          <canvas id="chartMunicipios"></canvas>
+        </div>
+        <div class="chart-footer">
+          <div class="chart-stats">
+            <div class="stat-item">
+              <span class="stat-label">Total Municipios</span>
+              <span class="stat-value" id="totalMunicipios">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Más activo</span>
+              <span class="stat-value" id="municipioActivo">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Promedio</span>
+              <span class="stat-value" id="promedioMunicipios">0</span>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Gráficos Adicionales -->
-<div class="row mb-4">
-  <!-- Gráfico de Instituciones por Municipio -->
-  <div class="col-md-6 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title mb-4">
-          <i class="bi bi-geo-alt-fill text-warning"></i> 
-          Instituciones por Municipio
-        </h5>
-        <div id="chartInstitucionesMunicipio" style="min-height: 300px;">
-          <div class="text-center py-5">
-            <div class="spinner-border text-warning" role="status">
-              <span class="visually-hidden">Cargando...</span>
-            </div>
+  <!-- Carga de Supervisores -->
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <i class="fas fa-users text-primary"></i>
+            <h5>Carga de Trabajo - Supervisores</h5>
+          </div>
+        </div>
+        <div class="chart-body">
+          <div class="table-responsive">
+            <table class="table table-hover supervisor-table">
+              <thead>
+                <tr>
+                  <th>Supervisor</th>
+                  <th>Convenios Activos</th>
+                  <th>Convenios Finalizados</th>
+                  <th>Carga Total</th>
+                  <th>Progreso</th>
+                </tr>
+              </thead>
+              <tbody id="tablaSupervisores">
+                <!-- Se llenará dinámicamente -->
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Gráfico de Homologaciones por Nivel -->
-  <div class="col-md-6 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title mb-4">
-          <i class="bi bi-graph-up text-info"></i> 
-          Homologaciones por Nivel Académico
-        </h5>
-        <div id="chartHomologacionesNivel" style="min-height: 300px;">
-          <div class="text-center py-5">
-            <div class="spinner-border text-info" role="status">
-              <span class="visually-hidden">Cargando...</span>
-            </div>
+  <!-- Tabla Detallada -->
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <i class="fas fa-table text-info"></i>
+            <h5>Estadísticas Detalladas</h5>
+          </div>
+          <div class="chart-actions">
+            <input type="text" class="form-control form-control-sm" id="searchTable" placeholder="Buscar...">
+            <button class="btn btn-sm btn-success">
+              <i class="fas fa-file-excel"></i> Exportar
+            </button>
+          </div>
+        </div>
+        <div class="chart-body">
+          <div class="table-responsive">
+            <table class="table table-hover modern-table">
+              <thead>
+                <tr>
+                  <th>Categoría</th>
+                  <th>Nombre</th>
+                  <th>Subcategoría</th>
+                  <th class="text-end">Cantidad</th>
+                  <th class="text-end">Suma Total</th>
+                  <th class="text-center">Última Actualización</th>
+                </tr>
+              </thead>
+              <tbody id="tablaEstadisticas">
+                <tr>
+                  <td colspan="6" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Cargando...</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="tablePagination">
+            <!-- Paginación dinámica -->
           </div>
         </div>
       </div>
@@ -133,63 +376,597 @@
   </div>
 </div>
 
-<!-- Tabla de Estadísticas Detalladas -->
-<div class="row">
-  <div class="col-12">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title mb-4">
-          <i class="bi bi-table"></i> 
-          Estadísticas Detalladas
-        </h5>
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead>
-              <tr>
-                <th>Categoría</th>
-                <th>Nombre</th>
-                <th>Subcategoría</th>
-                <th class="text-end">Cantidad</th>
-                <th class="text-end">Suma Total</th>
-                <th class="text-center">Última Actualización</th>
-              </tr>
-            </thead>
-            <tbody id="tablaEstadisticas">
-              <tr>
-                <td colspan="6" class="text-center py-4">
-                  <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Cargando...</span>
-                  </div>
-                  <p class="mt-2 text-muted">Cargando datos...</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<style>
+/* ===============================================
+   ESTILOS PARA ESTADÍSTICAS MEJORADAS
+   =============================================== */
 
-<!-- Modal de Error -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-body text-center p-5">
-        <div class="mb-4">
-          <div class="rounded-circle bg-danger d-inline-flex align-items-center justify-content-center" 
-               style="width: 80px; height: 80px;">
-            <i class="bi bi-x-lg text-white" style="font-size: 3rem;"></i>
-          </div>
-        </div>
-        <h4 class="mb-3" id="errorModalTitle">¡Error!</h4>
-        <p class="text-muted mb-4" id="errorModalMessage">
-          Ocurrió un error al cargar las estadísticas.
-        </p>
-        <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">
-          <i class="bi bi-x-circle"></i> Cerrar
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+.estadisticas-container {
+  padding: 2rem;
+  background-color: var(--bg-secondary);
+  min-height: 100vh;
+}
+
+/* Dashboard Header */
+.dashboard-header-modern {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-title-modern {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle-modern {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+/* ===============================================
+   KPI CARDS CON SPARKLINES
+   =============================================== */
+
+.kpi-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+}
+
+.kpi-card.kpi-primary {
+  --gradient-start: #338702;
+  --gradient-end: #529d3b;
+}
+
+.kpi-card.kpi-info {
+  --gradient-start: #2196F3;
+  --gradient-end: #64B5F6;
+}
+
+.kpi-card.kpi-warning {
+  --gradient-start: #FF9800;
+  --gradient-end: #FFB74D;
+}
+
+.kpi-card.kpi-success {
+  --gradient-start: #9C27B0;
+  --gradient-end: #BA68C8;
+}
+
+.kpi-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--gradient-start);
+}
+
+.kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.kpi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  color: white;
+  font-size: 1.5rem;
+}
+
+.kpi-trend {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.kpi-trend.positive {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.kpi-trend.negative {
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+}
+
+.kpi-body {
+  margin-bottom: 1rem;
+}
+
+.kpi-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1;
+}
+
+.kpi-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0 0;
+}
+
+.kpi-footer canvas {
+  width: 100% !important;
+}
+
+/* ===============================================
+   ALERTAS Y NOTIFICACIONES
+   =============================================== */
+
+.alert-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.alert-header {
+  background: linear-gradient(135deg, #338702, #529d3b);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.alert-header i {
+  font-size: 1.25rem;
+}
+
+.alert-header h5 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.alert-body {
+  padding: 1.5rem;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.alert-item:last-child {
+  margin-bottom: 0;
+}
+
+.alert-item i {
+  font-size: 1.25rem;
+}
+
+.alert-item.warning {
+  background: rgba(255, 152, 0, 0.1);
+  border-left: 4px solid #FF9800;
+}
+
+.alert-item.warning i {
+  color: #FF9800;
+}
+
+.alert-item.success {
+  background: rgba(76, 175, 80, 0.1);
+  border-left: 4px solid #4CAF50;
+}
+
+.alert-item.success i {
+  color: #4CAF50;
+}
+
+.alert-item.info {
+  background: rgba(33, 150, 243, 0.1);
+  border-left: 4px solid #2196F3;
+}
+
+.alert-item.info i {
+  color: #2196F3;
+}
+
+.alert-item span {
+  color: var(--text-primary);
+  flex: 1;
+}
+
+/* ===============================================
+   FILTROS INTELIGENTES
+   =============================================== */
+
+.filters-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.filters-header {
+  background: linear-gradient(135deg, #2196F3, #64B5F6);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filters-header i {
+  font-size: 1.25rem;
+}
+
+.filters-header h5 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.filters-body {
+  padding: 1.5rem;
+}
+
+/* ===============================================
+   CHART CARDS
+   =============================================== */
+
+.chart-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.chart-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chart-title i {
+  font-size: 1.5rem;
+}
+
+.chart-title h5 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chart-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.chart-actions input {
+  width: 200px;
+}
+
+.chart-body {
+  padding: 1.5rem;
+}
+
+/* ===============================================
+   RANKING LIST
+   =============================================== */
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ranking-item:hover {
+  background: var(--hover-bg);
+  transform: translateX(5px);
+}
+
+.ranking-position {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #338702, #529d3b);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ranking-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ranking-bar {
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ranking-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #338702, #529d3b);
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+.ranking-value {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1.125rem;
+}
+
+/* ===============================================
+   SUPERVISOR TABLE
+   =============================================== */
+
+.supervisor-table {
+  margin: 0;
+}
+
+.supervisor-table thead {
+  background: var(--bg-secondary);
+}
+
+.supervisor-table th {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+  padding: 1rem;
+}
+
+.supervisor-table td {
+  color: var(--text-primary);
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.progress-bar-custom {
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #338702, #529d3b);
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+
+/* ===============================================
+   MODERN TABLE
+   =============================================== */
+
+.modern-table {
+  margin: 0;
+}
+
+.modern-table thead {
+  background: var(--bg-secondary);
+}
+
+.modern-table th {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+  padding: 1rem;
+}
+
+.modern-table td {
+  color: var(--text-primary);
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modern-table tbody tr:hover {
+  background: var(--hover-bg);
+}
+
+.table-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+/* ===============================================
+   RESPONSIVE
+   =============================================== */
+
+@media (max-width: 768px) {
+  .estadisticas-container {
+    padding: 1rem;
+  }
+
+  .dashboard-title-modern {
+    font-size: 1.5rem;
+  }
+
+  .kpi-number {
+    font-size: 2rem;
+  }
+
+  .chart-actions input {
+    width: 150px;
+  }
+  
+  .ranking-item {
+    padding: 0.75rem;
+  }
+}
+
+/* ===============================================
+   CHART SIZES - MEJORADOS
+   =============================================== */
+
+.chart-card-large .chart-body {
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.chart-body-large {
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.chart-card-xlarge .chart-body {
+  min-height: 500px;
+  padding: 2rem;
+}
+
+.chart-body-xlarge {
+  min-height: 500px;
+  padding: 2rem;
+}
+
+/* Chart Footer */
+.chart-footer {
+  padding: 1rem 1.5rem;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.chart-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Button Group Custom */
+.btn-group-sm .btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.btn-group .btn.active {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* ===============================================
+   DARK MODE ADJUSTMENTS
+   =============================================== */
+
+[data-theme="dark"] .kpi-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .chart-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .alert-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .filters-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .chart-footer {
+  background: var(--hover-bg);
+}
+
+[data-theme="dark"] .btn-group .btn.active {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+}
+</style>
+
+<script>
+// Este script será reemplazado por el estadisticas.js mejorado
+console.log('Estadísticas HTML cargado - esperando JS...');
+</script>

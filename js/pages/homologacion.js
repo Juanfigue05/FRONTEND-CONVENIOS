@@ -1,5 +1,5 @@
-import { homologacionService } from '../api/homologacion_service.js';
-import { institucionService } from '../api/institucion_service.js';
+import { homologacionService } from '../api/homologacion.service.js';
+import { institucionService } from '../api/institucion.service.js';
 
 let homologacionesData = [];
 let homologacionesFiltradas = [];

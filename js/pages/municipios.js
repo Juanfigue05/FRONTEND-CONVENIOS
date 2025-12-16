@@ -1,4 +1,4 @@
-import { municipioService } from '../api/municipio_service.js';
+import { municipioService } from '../api/municipio.service.js';
 
 let municipiosData = [];
 let municipiosFiltrados = [];

@@ -1,3 +1,0 @@
-aqui van los js de las paginassecundarias
-pagina principal esta fuera de "pages"
-paginas secundarias estan dentro de "pages"

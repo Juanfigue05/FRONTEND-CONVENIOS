@@ -1,5 +1,5 @@
-import { institucionService } from '../api/institucion_service.js';
-import { municipioService } from '../api/municipio_service.js';
+import { institucionService } from '../api/institucion.service.js';
+import { municipioService } from '../api/municipio.service.js';
 
 let institucionesData = [];
 let institucionesFiltradas = [];
