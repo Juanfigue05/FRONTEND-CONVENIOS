@@ -1,597 +1,273 @@
 <div class="row">
   <div class="col-12">
-    <div class="card">
+    <div class="card shadow-sm">
       <div class="card-body">
+        <!-- Header -->
         <div class="d-md-flex align-items-center justify-content-between mb-4">
           <div>
-            <h4 class="card-title mb-0">Gestión de Convenios</h4>
-            <p class="card-subtitle text-muted">Administra los convenios del sistema</p>
+            <h4 class="card-title mb-1">
+              <i class="fas fa-handshake text-primary me-2"></i>
+              Gestión de Convenios
+            </h4>
+            <p class="card-subtitle text-muted mb-0">Administra los convenios institucionales del sistema</p>
           </div>
-          <div class="mt-3 mt-md-0 d-flex gap-2">
-            <!-- Botón subir Excel -->
-            <input type="file" id="inputExcelConvenios" accept=".xlsx,.xls" style="display:none;">
-            
-            <button type="button" class="btn btn-success" id="btnUploadExcel">
-              <i class="bi bi-file-earmark-arrow-up"></i> Subir Excel
+          <div class="mt-3 mt-md-0">
+            <button type="button" class="btn btn-success me-2" id="btnExportarExcel">
+              <i class="fas fa-file-excel me-1"></i> Exportar
             </button>
-
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createConvenioModal">
-              <i class="bi bi-plus-circle"></i> Nuevo Convenio
+            <button type="button" class="btn btn-primary" id="btnNuevoConvenio">
+              <i class="fas fa-plus-circle me-1"></i> Nuevo Convenio
             </button>
           </div>
         </div>
 
-        <!-- Buscador -->
-        <div class="row mb-4">
-          <div class="col-md-8">
-            <div class="input-group">
-              <input 
-                type="text" 
-                class="form-control" 
-                id="searchInput" 
-                placeholder="Buscar convenio por número..."
-                aria-label="Buscar convenio">
-              <button class="btn btn-outline-primary" type="button" id="searchButton">
-                <i class="bi bi-search"></i> Buscar
-              </button>
-              <button class="btn btn-outline-secondary" type="button" id="filterButton" title="Filtros avanzados">
-                <i class="bi bi-funnel"></i> Filtros
-              </button>
-              <button class="btn btn-outline-secondary" type="button" id="clearSearchButton">
-                <i class="bi bi-x-circle"></i> Limpiar
-              </button>
+        <!-- Estadísticas Rápidas -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="card bg-success text-white border-0">
+              <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="mb-1 small">Total Convenios</p>
+                    <h4 class="mb-0" id="totalConvenios">0</h4>
+                  </div>
+                  <i class="fas fa-handshake fa-2x opacity-50"></i>
+                </div>
+              </div>
             </div>
-            <small class="text-muted">Ingresa el número del convenio para buscar</small>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-primary text-white border-0">
+              <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="mb-1 small">Activos</p>
+                    <h4 class="mb-0">0</h4>
+                  </div>
+                  <i class="fas fa-check-circle fa-2x opacity-50"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-warning text-white border-0">
+              <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="mb-1 small">Por Vencer</p>
+                    <h4 class="mb-0">0</h4>
+                  </div>
+                  <i class="fas fa-clock fa-2x opacity-50"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card bg-danger text-white border-0">
+              <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="mb-1 small">Vencidos</p>
+                    <h4 class="mb-0">0</h4>
+                  </div>
+                  <i class="fas fa-times-circle fa-2x opacity-50"></i>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Tabla de convenios -->
-        <div class="table-responsive mt-4">
-          <table class="table table-hover mb-0 align-middle">
+        <!-- Filtros y Búsqueda -->
+        <div class="row mb-4">
+          <div class="col-md-12">
+            <div class="card border">
+              <div class="card-body">
+                <div class="row g-3">
+                  <!-- Búsqueda general -->
+                  <div class="col-md-4">
+                    <label class="form-label small fw-semibold">
+                      <i class="fas fa-search me-1"></i>Búsqueda General
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="buscar" 
+                      placeholder="Buscar por número, institución u objetivo...">
+                  </div>
+                  
+                  <!-- Filtro Estado -->
+                  <div class="col-md-2">
+                    <label class="form-label small fw-semibold">
+                      <i class="fas fa-filter me-1"></i>Estado
+                    </label>
+                    <select class="form-select" id="filtroEstado">
+                      <option value="">Todos</option>
+                      <option value="Activo">Activo</option>
+                      <option value="Vencido">Vencido</option>
+                      <option value="Por vencer">Por vencer</option>
+                      <option value="Suspendido">Suspendido</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Filtro Tipo -->
+                  <div class="col-md-2">
+                    <label class="form-label small fw-semibold">
+                      <i class="fas fa-tag me-1"></i>Tipo
+                    </label>
+                    <select class="form-select" id="filtroTipo">
+                      <option value="">Todos</option>
+                      <option value="Marco">Marco</option>
+                      <option value="Específico">Específico</option>
+                      <option value="Cooperación">Cooperación</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Filtro Institución -->
+                  <div class="col-md-3">
+                    <label class="form-label small fw-semibold">
+                      <i class="fas fa-building me-1"></i>Institución
+                    </label>
+                    <select class="form-select" id="filtroInstitucion">
+                      <option value="">Todas</option>
+                    </select>
+                  </div>
+                  
+                  <!-- Botón Limpiar -->
+                  <div class="col-md-1 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" id="btnLimpiarFiltros" title="Limpiar filtros">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Convenios -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
             <thead class="table-light">
               <tr>
-                <th scope="col" class="px-3">#</th>
-                <th scope="col" class="px-3">Número</th>
-                <th scope="col" class="px-3">Institución</th>
-                <th scope="col" class="px-3">Tipo</th>
-                <th scope="col" class="px-3">Estado</th>
-                <th scope="col" class="px-3">Supervisor</th>
-                <th scope="col" class="px-3">Fecha Firma</th>
-                <th scope="col" class="px-3 text-end">Acciones</th>
+                <th width="50">#</th>
+                <th>Número Convenio</th>
+                <th>Institución</th>
+                <th>Tipo</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center" width="150">Acciones</th>
               </tr>
             </thead>
-            <tbody id="datos">
+            <tbody id="tabla-convenios">
               <tr>
-                <td colspan="8" class="text-center py-4">
-                  <div class="spinner-border text-primary" role="status">
+                <td colspan="8" class="text-center py-5">
+                  <div class="spinner-border text-primary mb-3" role="status">
                     <span class="visually-hidden">Cargando...</span>
                   </div>
-                  <p class="mt-2 text-muted">Cargando convenios...</p>
+                  <p class="text-muted mb-0">Cargando convenios...</p>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-
-        <!-- Paginación -->
-        <div id="paginacion"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal para crear convenio -->
-<div class="modal fade" id="createConvenioModal" tabindex="-1" aria-labelledby="createConvenioModalLabel" aria-hidden="true">
+<!-- Modal para Crear/Editar Convenio -->
+<div class="modal fade" id="modalConvenio" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-body text-center p-5">
-        <div class="mb-4">
-          <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center" 
-               style="width: 80px; height: 80px;">
-            <i class="bi bi-check-lg text-white" style="font-size: 3rem;"></i>
-          </div>
-        </div>
-        <h4 class="mb-3" id="successModalTitle">¡Operación Exitosa!</h4>
-        <p class="text-muted mb-4" id="successModalMessage">
-          La operación se completó correctamente.
-        </p>
-        <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">
-          <i class="bi bi-check-circle"></i> Entendido
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Error -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-body text-center p-5">
-        <div class="mb-4">
-          <div class="rounded-circle bg-danger d-inline-flex align-items-center justify-content-center" 
-               style="width: 80px; height: 80px;">
-            <i class="bi bi-x-lg text-white" style="font-size: 3rem;"></i>
-          </div>
-        </div>
-        <h4 class="mb-3" id="errorModalTitle">¡Error!</h4>
-        <p class="text-muted mb-4" id="errorModalMessage">
-          Ocurrió un error al procesar la operación.
-        </p>
-        <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">
-          <i class="bi bi-x-circle"></i> Cerrar
-        </button>
-      </div>
-    </div>
-  </div>
-</div>header">
-        <h5 class="modal-title" id="createConvenioModalLabel">
-          <i class="bi bi-file-earmark-plus"></i> Crear Nuevo Convenio
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalConvenioTitle">
+          <i class="fas fa-handshake me-2"></i>Nuevo Convenio
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="formSaveConvenio">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="inputTipoConvenio" class="form-label">Tipo Convenio *</label>
-              <input type="text" class="form-control" id="inputTipoConvenio" required>
+        <form id="formConvenio">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="num_convenio" class="form-label">Número de Convenio *</label>
+              <input type="text" class="form-control" id="num_convenio" required>
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="inputNumConvenio" class="form-label">Número Convenio *</label>
-              <input type="text" class="form-control" id="inputNumConvenio" required>
-            </div>
-          </div>
-          
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="inputNitInstitucion" class="form-label">Institución *</label>
-              <select class="form-select" id="inputNitInstitucion" required>
-                <option value="">Seleccione una institución...</option>
-              </select>
-              <small class="text-muted">Selecciona la institución</small>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="inputNombreInstitucion" class="form-label">Nombre Institución *</label>
-              <input type="text" class="form-control" id="inputNombreInstitucion" readonly required>
-              <small class="text-muted">Se completa automáticamente</small>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="inputNumProceso" class="form-label">Número Proceso</label>
-              <input type="text" class="form-control" id="inputNumProceso">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="inputEstadoConvenio" class="form-label">Estado Convenio *</label>
-              <select class="form-control" id="inputEstadoConvenio" required>
+            <div class="col-md-6">
+              <label for="nit_institucion" class="form-label">Institución *</label>
+              <select class="form-select" id="nit_institucion" required>
                 <option value="">Seleccione...</option>
-                <option value="Convencional">Convencional</option>
-                <option value="Preconvencional">Preconvencional</option>
-                <option value="Liquidado">Liquidado</option>
               </select>
             </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="inputObjetivoConvenio" class="form-label">Objetivo del Convenio</label>
-            <textarea class="form-control" id="inputObjetivoConvenio" rows="3"></textarea>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="inputTipoProceso" class="form-label">Tipo Proceso</label>
-              <input type="text" class="form-control" id="inputTipoProceso" value="contratación directa">
+            <div class="col-md-6">
+              <label for="tipo_convenio" class="form-label">Tipo de Convenio *</label>
+              <select class="form-select" id="tipo_convenio" required>
+                <option value="">Seleccione...</option>
+                <option value="Marco">Marco</option>
+                <option value="Específico">Específico</option>
+                <option value="Cooperación">Cooperación</option>
+              </select>
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="inputTipoConvenioSena" class="form-label">Tipo Convenio SENA</label>
-              <input type="text" class="form-control" id="inputTipoConvenioSena">
+            <div class="col-md-6">
+              <label for="estado_convenio" class="form-label">Estado *</label>
+              <select class="form-select" id="estado_convenio" required>
+                <option value="Activo">Activo</option>
+                <option value="Por vencer">Por vencer</option>
+                <option value="Vencido">Vencido</option>
+                <option value="Suspendido">Suspendido</option>
+              </select>
             </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="inputFechaFirma" class="form-label">Fecha Firma</label>
-              <input type="date" class="form-control" id="inputFechaFirma">
-              <small class="text-muted">Formato: YYYY-MM-DD</small>
+            <div class="col-md-6">
+              <label for="fecha_inicio" class="form-label">Fecha de Inicio *</label>
+              <input type="date" class="form-control" id="fecha_inicio" required>
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="inputFechaInicio" class="form-label">Fecha Inicio</label>
-              <input type="date" class="form-control" id="inputFechaInicio">
-              <small class="text-muted">Formato: YYYY-MM-DD</small>
+            <div class="col-md-6">
+              <label for="fecha_fin" class="form-label">Fecha de Fin *</label>
+              <input type="date" class="form-control" id="fecha_fin" required>
             </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="inputPlazoEjecucion" class="form-label">Plazo Ejecución (fecha)</label>
-              <input type="date" class="form-control" id="inputPlazoEjecucion">
-              <small class="text-muted">Fecha final de ejecución</small>
+            <div class="col-12">
+              <label for="objetivo" class="form-label">Objetivo del Convenio</label>
+              <textarea class="form-control" id="objetivo" rows="3"></textarea>
             </div>
-            <div class="col-md-4 mb-3">
-              <label for="inputDuracionConvenio" class="form-label">Duración Convenio</label>
-              <input type="text" class="form-control" id="inputDuracionConvenio" readonly>
-              <small class="text-muted">Se calcula automáticamente</small>
+            <div class="col-md-6">
+              <label for="supervisor" class="form-label">Supervisor</label>
+              <input type="text" class="form-control" id="supervisor">
             </div>
-            <div class="col-md-4 mb-3">
-              <label for="inputDuracionTotal" class="form-label">Duración Total</label>
-              <input type="text" class="form-control" id="inputDuracionTotal">
+            <div class="col-md-6">
+              <label for="valor" class="form-label">Valor (COP)</label>
+              <input type="number" class="form-control" id="valor" min="0">
             </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="inputProrroga" class="form-label">Prórroga <small class="text-muted">(opcional)</small></label>
-              <input type="text" class="form-control" id="inputProrroga" placeholder="Ej: 6 meses">
-              <small class="text-muted">Dejar vacío para "N/A"</small>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="inputPlazoProrroga" class="form-label">Plazo Prórroga <small class="text-muted">(opcional)</small></label>
-              <input type="text" class="form-control" id="inputPlazoProrroga" placeholder="Ej: 2024-12-31">
-              <small class="text-muted">Dejar vacío para "N/A"</small>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="inputSupervisor" class="form-label">Supervisor</label>
-              <input type="text" class="form-control" id="inputSupervisor">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="inputPersonaApoyoFpi" class="form-label">Persona Apoyo FPI</label>
-              <input type="text" class="form-control" id="inputPersonaApoyoFpi">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="inputPrecioEstimado" class="form-label">Precio Estimado</label>
-              <input type="number" class="form-control" id="inputPrecioEstimado" min="0" step="0.01">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="inputFechaPublicacionProceso" class="form-label">Fecha Publicación Proceso</label>
-              <input type="date" class="form-control" id="inputFechaPublicacionProceso">
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="inputEnlaceSecop" class="form-label">Enlace SECOP</label>
-            <input type="url" class="form-control" id="inputEnlaceSecop" placeholder="https://...">
-          </div>
-
-          <div class="mb-3">
-            <label for="inputEnlaceEvidencias" class="form-label">Enlace Evidencias</label>
-            <input type="url" class="form-control" id="inputEnlaceEvidencias" placeholder="https://...">
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i>Cancelar
+        </button>
         <button type="button" class="btn btn-primary" id="btnGuardarConvenio">
-          <i class="bi bi-save"></i> Guardar Convenio
+          <i class="fas fa-save me-1"></i>Guardar Convenio
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal para editar convenio -->
-<div class="modal fade" id="editConvenioModal" tabindex="-1" aria-labelledby="editConvenioModalLabel" aria-hidden="true">
+<!-- Modal de Detalles -->
+<div class="modal fade" id="modalDetalles" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editConvenioModalLabel">
-          <i class="bi bi-pencil-square"></i> Editar Convenio
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-info-circle me-2"></i>Detalles del Convenio
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        <form id="formEditConvenio">
-          <input type="hidden" id="editIdConvenio">
-          
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editTipoConvenio" class="form-label">Tipo Convenio</label>
-              <input type="text" class="form-control" id="editTipoConvenio">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editNumConvenio" class="form-label">Número Convenio</label>
-              <input type="text" class="form-control" id="editNumConvenio">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editNitInstitucion" class="form-label">Institución</label>
-              <select class="form-select" id="editNitInstitucion">
-                <option value="">Seleccione una institución...</option>
-              </select>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editNombreInstitucion" class="form-label">Nombre Institución</label>
-              <input type="text" class="form-control" id="editNombreInstitucion" readonly>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editNumProceso" class="form-label">Número Proceso</label>
-              <input type="text" class="form-control" id="editNumProceso">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editEstadoConvenio" class="form-label">Estado Convenio</label>
-              <select class="form-control" id="editEstadoConvenio">
-                <option value="">Seleccione...</option>
-                <option value="Convencional">Convencional</option>
-                <option value="Preconvencional">Preconvencional</option>
-                <option value="Liquidado">Liquidado</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="editObjetivoConvenio" class="form-label">Objetivo del Convenio</label>
-            <textarea class="form-control" id="editObjetivoConvenio" rows="3"></textarea>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editTipoProceso" class="form-label">Tipo Proceso</label>
-              <input type="text" class="form-control" id="editTipoProceso">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editTipoConvenioSena" class="form-label">Tipo Convenio SENA</label>
-              <input type="text" class="form-control" id="editTipoConvenioSena">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editFechaFirma" class="form-label">Fecha Firma</label>
-              <input type="date" class="form-control" id="editFechaFirma">
-              <small class="text-muted">Formato: YYYY-MM-DD</small>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editFechaInicio" class="form-label">Fecha Inicio</label>
-              <input type="date" class="form-control" id="editFechaInicio">
-              <small class="text-muted">Formato: YYYY-MM-DD</small>
-            </div>
-          </div>
-
-          <div class="row">
-             <div class="col-md-4 mb-3">
-              <label for="editPlazoEjecucion" class="form-label">Plazo Ejecución</label>
-              <input type="date" class="form-control" id="editPlazoEjecucion">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="editDuracionConvenio" class="form-label">Duración Convenio</label>
-              <input type="text" class="form-control" id="editDuracionConvenio">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="editDuracionTotal" class="form-label">Duración Total</label>
-              <input type="text" class="form-control" id="editDuracionTotal">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editProrroga" class="form-label">Prórroga</label>
-              <input type="text" class="form-control" id="editProrroga" placeholder="Ej: 6 meses">
-              <small class="text-muted">Dejar vacío para "N/A"</small>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editPlazoProrroga" class="form-label">Plazo Prórroga</label>
-              <input type="text" class="form-control" id="editPlazoProrroga" placeholder="Ej: 2024-12-31">
-              <small class="text-muted">Dejar vacío para "N/A"</small>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editSupervisor" class="form-label">Supervisor</label>
-              <input type="text" class="form-control" id="editSupervisor">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editPersonaApoyoFpi" class="form-label">Persona Apoyo FPI</label>
-              <input type="text" class="form-control" id="editPersonaApoyoFpi">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editPrecioEstimado" class="form-label">Precio Estimado</label>
-              <input type="number" class="form-control" id="editPrecioEstimado" min="0" step="0.01">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editFechaPublicacionProceso" class="form-label">Fecha Publicación Proceso</label>
-              <input type="date" class="form-control" id="editFechaPublicacionProceso">
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="editEnlaceSecop" class="form-label">Enlace SECOP</label>
-            <input type="url" class="form-control" id="editEnlaceSecop">
-          </div>
-
-          <div class="mb-3">
-            <label for="editEnlaceEvidencias" class="form-label">Enlace Evidencias</label>
-            <input type="url" class="form-control" id="editEnlaceEvidencias">
-          </div>
-        </form>
+      <div class="modal-body" id="detallesContent">
+        <!-- Contenido dinámico -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="btnEditConvenio">
-          <i class="bi bi-save"></i> Guardar Cambios
-        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
 </div>
-
-<!-- Modal para filtros de convenios -->
-<div class="modal fade" id="filtersConvenioModal" tabindex="-1" aria-labelledby="filtersConvenioModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="filtersConvenioModalLabel">
-          <i class="bi bi-funnel"></i> Filtros Avanzados de Convenios
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="formFiltersConvenio">
-          <div class="alert alert-info" role="alert">
-            <i class="bi bi-info-circle me-2"></i>
-            <strong>Nota sobre fechas:</strong> Solo se filtrarán convenios con fechas válidas (formato YYYY-MM-DD). Los convenios con texto en lugar de fecha no aparecerán en búsquedas por rango de fechas.
-          </div>
-
-          <h6 class="fw-bold mb-3"><i class="bi bi-file-text me-2"></i>Información del Convenio</h6>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="filterTipoConvenio" class="form-label">Tipo Convenio</label>
-              <input type="text" class="form-control" id="filterTipoConvenio" placeholder="Ej: Interadministrativo">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="filterEstadoConvenio" class="form-label">Estado Convenio</label>
-              <select class="form-control" id="filterEstadoConvenio">
-                <option value="">Todos</option>
-                <option value="Convencional">Convencional</option>
-                <option value="Preconvencional">Preconvencional</option>
-                <option value="Liquidado">Liquidado</option>
-              </select>
-            </div>
-          </div>
-
-          <hr class="my-4">
-
-          <h6 class="fw-bold mb-3"><i class="bi bi-building me-2"></i>Institución</h6>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="filterNitInstitucion" class="form-label">Institución</label>
-              <select class="form-select" id="filterNitInstitucion">
-                <option value="">Todas las instituciones</option>
-              </select>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="filterNombreInstitucion" class="form-label">Buscar por Nombre</label>
-              <input type="text" class="form-control" id="filterNombreInstitucion" placeholder="Nombre de la institución">
-            </div>
-          </div>
-
-          <hr class="my-4">
-
-          <h6 class="fw-bold mb-3"><i class="bi bi-briefcase me-2"></i>Proceso y Tipo</h6>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="filterTipoProceso" class="form-label">Tipo Proceso</label>
-              <input type="text" class="form-control" id="filterTipoProceso" placeholder="Ej: Contratación directa">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="filterTipoConvenioSena" class="form-label">Tipo Convenio SENA</label>
-              <input type="text" class="form-control" id="filterTipoConvenioSena" placeholder="Ej: Docencia-Servicio">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="filterNumProceso" class="form-label">Número Proceso</label>
-              <input type="text" class="form-control" id="filterNumProceso" placeholder="Número del proceso">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="filterObjetivo" class="form-label">Buscar en Objetivo</label>
-              <input type="text" class="form-control" id="filterObjetivo" placeholder="Palabra clave">
-            </div>
-          </div>
-
-          <hr class="my-4">
-
-          <h6 class="fw-bold mb-3"><i class="bi bi-people me-2"></i>Responsables</h6>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="filterSupervisor" class="form-label">Supervisor</label>
-              <input type="text" class="form-control" id="filterSupervisor" placeholder="Nombre del supervisor">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="filterPersonaApoyo" class="form-label">Persona Apoyo FPI</label>
-              <input type="text" class="form-control" id="filterPersonaApoyo" placeholder="Nombre de la persona">
-            </div>
-          </div>
-
-          <hr class="my-4">
-
-          <h6 class="fw-bold mb-3"><i class="bi bi-calendar-range me-2"></i>Fechas de Firma</h6>
-          <div class="mb-3">
-            <div class="row">
-              <div class="col-md-6">
-                <label for="filterFechaFirmaInicio" class="form-label">Desde</label>
-                <input type="date" class="form-control" id="filterFechaFirmaInicio">
-              </div>
-              <div class="col-md-6">
-                <label for="filterFechaFirmaFin" class="form-label">Hasta</label>
-                <input type="date" class="form-control" id="filterFechaFirmaFin">
-              </div>
-            </div>
-          </div>
-
-          <h6 class="fw-bold mb-3"><i class="bi bi-calendar-check me-2"></i>Fechas de Inicio</h6>
-          <div class="mb-3">
-            <div class="row">
-              <div class="col-md-6">
-                <label for="filterFechaInicioInicio" class="form-label">Desde</label>
-                <input type="date" class="form-control" id="filterFechaInicioInicio">
-              </div>
-              <div class="col-md-6">
-                <label for="filterFechaInicioFin" class="form-label">Hasta</label>
-                <input type="date" class="form-control" id="filterFechaInicioFin">
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="clearFiltersModalBtn">
-          <i class="bi bi-x-circle"></i> Limpiar Filtros
-        </button>
-        <button type="button" class="btn btn-primary" id="applyFiltersBtn">
-          <i class="bi bi-search"></i> Aplicar Filtros
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Confirmación de Eliminación -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-body text-center p-5">
-        <div class="mb-4">
-          <div class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center" 
-               style="width: 80px; height: 80px;">
-            <i class="bi bi-exclamation-triangle text-white" style="font-size: 3rem;"></i>
-          </div>
-        </div>
-        <h4 class="mb-3">¿Eliminar Convenio?</h4>
-        <p class="text-muted mb-4" id="deleteConfirmMessage">
-          ¿Estás seguro de que deseas eliminar este convenio?
-        </p>
-        <div class="d-flex gap-2 justify-content-center">
-          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
-            <i class="bi bi-x-circle"></i> Cancelar
-          </button>
-          <button type="button" class="btn btn-danger px-4" id="btnConfirmDelete">
-            <i class="bi bi-trash"></i> Eliminar
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Confirmación de Éxito -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-
