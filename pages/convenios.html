@@ -42,7 +42,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <p class="mb-1 small">Activos</p>
-                    <h4 class="mb-0">0</h4>
+                    <h4 class="mb-0" id="conveniosActivos">0</h4>
                   </div>
                   <i class="fas fa-check-circle fa-2x opacity-50"></i>
                 </div>
@@ -55,7 +55,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <p class="mb-1 small">Por Vencer</p>
-                    <h4 class="mb-0">0</h4>
+                    <h4 class="mb-0" id="conveniosPorVencer">0</h4>
                   </div>
                   <i class="fas fa-clock fa-2x opacity-50"></i>
                 </div>
@@ -68,7 +68,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <p class="mb-1 small">Vencidos</p>
-                    <h4 class="mb-0">0</h4>
+                    <h4 class="mb-0" id="conveniosVencidos">0</h4>
                   </div>
                   <i class="fas fa-times-circle fa-2x opacity-50"></i>
                 </div>
@@ -116,6 +116,7 @@
                     </label>
                     <select class="form-select" id="filtroTipo">
                       <option value="">Todos</option>
+                      <option value="Interadministrativo">Interadministrativo</option>
                       <option value="Marco">Marco</option>
                       <option value="Específico">Específico</option>
                       <option value="Cooperación">Cooperación</option>
@@ -176,9 +177,9 @@
   </div>
 </div>
 
-<!-- Modal para Crear/Editar Convenio -->
+<!-- Modal para Crear/Editar Convenio - COMPLETO CON TODOS LOS CAMPOS -->
 <div class="modal fade" id="modalConvenio" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
         <h5 class="modal-title" id="modalConvenioTitle">
@@ -188,56 +189,174 @@
       </div>
       <div class="modal-body">
         <form id="formConvenio">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="num_convenio" class="form-label">Número de Convenio *</label>
-              <input type="text" class="form-control" id="num_convenio" required>
+          
+          <!-- SECCIÓN 1: INFORMACIÓN BÁSICA -->
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información Básica</h6>
             </div>
-            <div class="col-md-6">
-              <label for="nit_institucion" class="form-label">Institución *</label>
-              <select class="form-select" id="nit_institucion" required>
-                <option value="">Seleccione...</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="tipo_convenio" class="form-label">Tipo de Convenio *</label>
-              <select class="form-select" id="tipo_convenio" required>
-                <option value="">Seleccione...</option>
-                <option value="Marco">Marco</option>
-                <option value="Específico">Específico</option>
-                <option value="Cooperación">Cooperación</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="estado_convenio" class="form-label">Estado *</label>
-              <select class="form-select" id="estado_convenio" required>
-                <option value="Activo">Activo</option>
-                <option value="Por vencer">Por vencer</option>
-                <option value="Vencido">Vencido</option>
-                <option value="Suspendido">Suspendido</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="fecha_inicio" class="form-label">Fecha de Inicio *</label>
-              <input type="date" class="form-control" id="fecha_inicio" required>
-            </div>
-            <div class="col-md-6">
-              <label for="fecha_fin" class="form-label">Fecha de Fin *</label>
-              <input type="date" class="form-control" id="fecha_fin" required>
-            </div>
-            <div class="col-12">
-              <label for="objetivo" class="form-label">Objetivo del Convenio</label>
-              <textarea class="form-control" id="objetivo" rows="3"></textarea>
-            </div>
-            <div class="col-md-6">
-              <label for="supervisor" class="form-label">Supervisor</label>
-              <input type="text" class="form-control" id="supervisor">
-            </div>
-            <div class="col-md-6">
-              <label for="valor" class="form-label">Valor (COP)</label>
-              <input type="number" class="form-control" id="valor" min="0">
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label for="tipo_convenio" class="form-label">Tipo de Convenio *</label>
+                  <select class="form-select" id="tipo_convenio" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Interadministrativo">Interadministrativo</option>
+                    <option value="Marco">Marco</option>
+                    <option value="Específico">Específico</option>
+                    <option value="Cooperación">Cooperación</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="num_convenio" class="form-label">Número de Convenio *</label>
+                  <input type="text" class="form-control" id="num_convenio" placeholder="Ej: CONV-2024-001" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="num_proceso" class="form-label">Número de Proceso</label>
+                  <input type="text" class="form-control" id="num_proceso" placeholder="Ej: PROC-2024-001">
+                </div>
+                <div class="col-md-6">
+                  <label for="nit_institucion" class="form-label">Institución *</label>
+                  <select class="form-select" id="nit_institucion" required>
+                    <option value="">Seleccione...</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="nombre_institucion" class="form-label">Nombre Institución *</label>
+                  <input type="text" class="form-control" id="nombre_institucion" readonly>
+                  <small class="text-muted">Se completa automáticamente al seleccionar institución</small>
+                </div>
+                <div class="col-md-6">
+                  <label for="estado_convenio" class="form-label">Estado del Convenio *</label>
+                  <select class="form-select" id="estado_convenio" required>
+                    <option value="Activo">Activo</option>
+                    <option value="Por vencer">Por vencer</option>
+                    <option value="Vencido">Vencido</option>
+                    <option value="Suspendido">Suspendido</option>
+                    <option value="Convencional">Convencional</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="tipo_proceso" class="form-label">Tipo de Proceso</label>
+                  <select class="form-select" id="tipo_proceso">
+                    <option value="">Seleccione...</option>
+                    <option value="Contratación directa">Contratación directa</option>
+                    <option value="Licitación pública">Licitación pública</option>
+                    <option value="Selección abreviada">Selección abreviada</option>
+                    <option value="Concurso de méritos">Concurso de méritos</option>
+                    <option value="Mínima cuantía">Mínima cuantía</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label for="objetivo_convenio" class="form-label">Objetivo del Convenio</label>
+                  <textarea class="form-control" id="objetivo_convenio" rows="3" 
+                    placeholder="Describe el objetivo principal del convenio..."></textarea>
+                </div>
+              </div>
             </div>
           </div>
+
+          <!-- SECCIÓN 2: FECHAS Y PLAZOS -->
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h6 class="mb-0"><i class="fas fa-calendar me-2"></i>Fechas y Plazos</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <label for="fecha_firma" class="form-label">Fecha de Firma</label>
+                  <input type="date" class="form-control" id="fecha_firma">
+                </div>
+                <div class="col-md-3">
+                  <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                  <input type="date" class="form-control" id="fecha_inicio">
+                </div>
+                <div class="col-md-3">
+                  <label for="fecha_publicacion_proceso" class="form-label">Fecha Publicación</label>
+                  <input type="date" class="form-control" id="fecha_publicacion_proceso">
+                </div>
+                <div class="col-md-3">
+                  <label for="duracion_convenio" class="form-label">Duración Convenio</label>
+                  <input type="text" class="form-control" id="duracion_convenio" placeholder="Ej: 12 meses">
+                </div>
+                <div class="col-md-3">
+                  <label for="plazo_ejecucion" class="form-label">Plazo de Ejecución</label>
+                  <input type="text" class="form-control" id="plazo_ejecucion" placeholder="Ej: 2025-12-31">
+                </div>
+                <div class="col-md-3">
+                  <label for="prorroga" class="form-label">Prórroga</label>
+                  <input type="text" class="form-control" id="prorroga" placeholder="Ej: Sí/No">
+                </div>
+                <div class="col-md-3">
+                  <label for="plazo_prorroga" class="form-label">Plazo Prórroga</label>
+                  <input type="text" class="form-control" id="plazo_prorroga" placeholder="Ej: 6 meses">
+                </div>
+                <div class="col-md-3">
+                  <label for="duracion_total" class="form-label">Duración Total</label>
+                  <input type="text" class="form-control" id="duracion_total" placeholder="Ej: 18 meses">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 3: INFORMACIÓN ADMINISTRATIVA -->
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Información Administrativa</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="supervisor" class="form-label">Supervisor del Convenio</label>
+                  <input type="text" class="form-control" id="supervisor" placeholder="Nombre completo del supervisor">
+                </div>
+                <div class="col-md-6">
+                  <label for="persona_apoyo_fpi" class="form-label">Persona de Apoyo FPI</label>
+                  <input type="text" class="form-control" id="persona_apoyo_fpi" placeholder="Nombre de la persona de apoyo">
+                </div>
+                <div class="col-md-6">
+                  <label for="tipo_convenio_sena" class="form-label">Tipo Convenio SENA</label>
+                  <select class="form-select" id="tipo_convenio_sena">
+                    <option value="">Seleccione...</option>
+                    <option value="Docencia-Servicio">Docencia-Servicio</option>
+                    <option value="Formación">Formación</option>
+                    <option value="Investigación">Investigación</option>
+                    <option value="Extensión">Extensión</option>
+                    <option value="Prácticas">Prácticas</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="precio_estimado" class="form-label">Precio Estimado (COP)</label>
+                  <input type="number" class="form-control" id="precio_estimado" min="0" step="0.01" 
+                    placeholder="0.00">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 4: ENLACES Y EVIDENCIAS -->
+          <div class="card mb-0">
+            <div class="card-header bg-light">
+              <h6 class="mb-0"><i class="fas fa-link me-2"></i>Enlaces y Evidencias</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="enlace_secop" class="form-label">Enlace SECOP</label>
+                  <input type="url" class="form-control" id="enlace_secop" 
+                    placeholder="https://www.colombiacompra.gov.co/...">
+                  <small class="text-muted">Enlace al proceso en el SECOP</small>
+                </div>
+                <div class="col-12">
+                  <label for="enlace_evidencias" class="form-label">Enlace a Evidencias</label>
+                  <textarea class="form-control" id="enlace_evidencias" rows="2" 
+                    placeholder="Enlaces a Google Drive, SharePoint u otros repositorios..."></textarea>
+                  <small class="text-muted">Puede incluir múltiples enlaces separados por comas</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </form>
       </div>
       <div class="modal-footer">
@@ -252,9 +371,9 @@
   </div>
 </div>
 
-<!-- Modal de Detalles -->
+<!-- Modal de Detalles COMPLETO -->
 <div class="modal fade" id="modalDetalles" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-info text-white">
         <h5 class="modal-title">
@@ -267,6 +386,41 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modales de Confirmación -->
+<div class="modal fade" id="modalExito" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="mb-3">
+          <i class="fas fa-check-circle fa-4x text-success"></i>
+        </div>
+        <h5 id="mensajeExitoTitulo">¡Operación Exitosa!</h5>
+        <p id="mensajeExitoTexto" class="text-muted mb-0"></p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalError" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="mb-3">
+          <i class="fas fa-times-circle fa-4x text-danger"></i>
+        </div>
+        <h5 id="mensajeErrorTitulo">Error</h5>
+        <p id="mensajeErrorTexto" class="text-muted mb-0"></p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>

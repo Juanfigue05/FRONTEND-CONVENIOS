@@ -1,58 +1,104 @@
 import { userService } from './api/user.service.js';
 
-/**
- * Inicializa la página de registro: configura el listener del formulario
- * que captura los datos, valida y llama al servicio para crear el usuario.
- */
 document.addEventListener('DOMContentLoaded', () => {
-    // Elemento del formulario de registro
     const registerForm = document.getElementById('registerForm');
-    const alertDiv = document.getElementById('alert');
+    const errorDiv = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+    const successDiv = document.getElementById('success-message');
+    const successText = document.getElementById('success-text');
+    const btnRegister = document.getElementById('btnRegister');
 
-    if (registerForm) {
-        /**
-         * Manejador del evento submit del formulario de registro.
-         * Recopila los campos, construye el objeto `userData` y llama
-         * a `userService.createUser`. Muestra mensajes de éxito/error.
-         */
-        registerForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    if (!registerForm) return;
 
-            // Limpiar alertas previas
-            alertDiv.classList.add('d-none');
-            alertDiv.classList.remove('alert-danger', 'alert-success');
-            alertDiv.textContent = '';
+    registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-            const formData = new FormData(registerForm);
+        // Ocultar mensajes previos
+        if (errorDiv) errorDiv.style.display = 'none';
+        if (successDiv) successDiv.style.display = 'none';
+
+        const nombre = document.getElementById('inputNombre')?.value.trim() || '';
+        const correo = document.getElementById('inputEmail')?.value.trim() || '';
+        const documento = document.getElementById('inputDocumento')?.value.trim() || '';
+        const password = document.getElementById('inputPassword')?.value || '';
+        const passwordConfirm = document.getElementById('inputPasswordConfirm')?.value || '';
+
+        // Validaciones
+        if (password !== passwordConfirm) {
+            if (errorText) errorText.textContent = 'Las contraseñas no coinciden';
+            if (errorDiv) errorDiv.style.display = 'block';
+            return;
+        }
+
+        if (nombre.length < 3) {
+            if (errorText) errorText.textContent = 'El nombre debe tener al menos 3 caracteres';
+            if (errorDiv) errorDiv.style.display = 'block';
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(correo)) {
+            if (errorText) errorText.textContent = 'Ingresa un correo válido';
+            if (errorDiv) errorDiv.style.display = 'block';
+            return;
+        }
+
+        if (documento.length < 8 || documento.length > 12) {
+            if (errorText) errorText.textContent = 'El documento debe tener entre 8 y 12 caracteres';
+            if (errorDiv) errorDiv.style.display = 'block';
+            return;
+        }
+
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            if (errorText) errorText.textContent = 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un caracter especial';
+            if (errorDiv) errorDiv.style.display = 'block';
+            return;
+        }
+
+        // Mostrar loading en el botón
+        const originalBtnText = btnRegister ? btnRegister.innerHTML : '';
+        if (btnRegister) {
+            btnRegister.disabled = true;
+            btnRegister.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creando cuenta...';
+        }
+
+        try {
             const userData = {
-                nombre_completo: formData.get('full_name'),
-                correo: formData.get('email'),
-                num_documento: formData.get('num_documento'),
-                contra_encript: formData.get('contrasena'),
-                id_rol: 2, // 2 = Usuario estándar (según convención observada)
+                nombre_completo: nombre,
+                id_rol: 2,
+                correo: correo,
+                num_documento: documento,
+                contra_encript: password,
                 estado: true
             };
 
-            try {
-                await userService.createUser(userData);
+            await userService.createUser(userData);
 
-                // Mostrar éxito
-                alertDiv.classList.remove('d-none');
-                alertDiv.classList.add('alert-success');
-                alertDiv.textContent = 'Usuario registrado exitosamente. Redirigiendo...';
+            if (successText) successText.textContent = '¡Cuenta creada exitosamente! Redirigiendo al login...';
+            if (successDiv) successDiv.style.display = 'block';
 
-                // Redirigir después de 2 segundos
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-
-            } catch (error) {
-                // Mostrar error
-                console.error('Error al registrar:', error);
-                alertDiv.classList.remove('d-none');
-                alertDiv.classList.add('alert-danger');
-                alertDiv.textContent = error.message || 'Error al registrar el usuario. Inténtalo de nuevo.';
+            if (btnRegister) {
+                btnRegister.innerHTML = '<i class="fas fa-check-circle me-2"></i>¡Cuenta Creada!';
+                btnRegister.classList.remove('btn-register');
+                btnRegister.classList.add('btn-success');
             }
-        });
-    }
+
+            registerForm.reset();
+
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+
+        } catch (error) {
+            console.error('Error en registro:', error);
+            if (errorText) errorText.textContent = error.message || 'Error al registrar. Intenta nuevamente.';
+            if (errorDiv) errorDiv.style.display = 'block';
+
+            if (btnRegister) {
+                btnRegister.disabled = false;
+                btnRegister.innerHTML = originalBtnText;
+            }
+        }
+    });
 });

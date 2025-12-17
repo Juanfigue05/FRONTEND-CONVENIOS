@@ -1,64 +1,78 @@
 // login.js
-const boton = document.getElementById("login");
+import { API_BASE_URL } from './api/apiClient.js';
 
-boton.addEventListener("click", (event)=>{
-    event.preventDefault(); // Evita que el formulario se envíe de la forma tradicional
-    // lo que que quiero que se ejecute cuando en el boton hagan click
-    // URL del endpoint de autenticación en el servidor
-    const loginUrl = "https://disciplined-amazement-production.up.railway.app/access/token";
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('login');
+    const errorDiv = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
 
-    let correo = document.getElementById("inputEmail").value;
-    let contrasenia = document.getElementById("inputPassword").value;
+    if (!loginForm) return;
 
-    // Crear objeto URLSearchParams para enviar datos como formulario
-    const formData = new URLSearchParams();
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    // Agregar credenciales al formulario
-    formData.append("username", correo);  // Email del usuario
-    formData.append("password", contrasenia); // Contraseña del usuario
+        // Ocultar mensaje previo
+        if (errorDiv) errorDiv.style.display = 'none';
 
-    // Realizar petición HTTP POST al servidor
-    fetch(loginUrl, {
-        method: "POST",  // Método HTTP para enviar datos
-        headers: {
-            // Especifica que enviamos datos de formulario codificados en URL
-            "Content-Type": "application/x-www-form-urlencoded",
-            // Especifica que esperamos recibir JSON como respuesta
-            "accept": "application/json"
-        },
-        body: formData  // Datos del formulario a enviar
-    })
-    .then(response => {
-        // Verificar si la respuesta fue exitosa (status 200-299)
-        if (!response.ok) {
-            // Si hay error, convertir respuesta a JSON y lanzar excepción
-            return response.json().then(err => { throw err });
+        const correo = document.getElementById('inputEmail')?.value.trim() || '';
+        const contrasenia = document.getElementById('inputPassword')?.value || '';
+
+        // Mostrar loading
+        const originalBtnHtml = loginBtn ? loginBtn.innerHTML : '';
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Iniciando sesión...';
         }
-        // Si todo está bien, convertir respuesta a JSON
-        return response.json();
-    })
-    .then(data => {
-        // Manejar respuesta exitosa del servidor
-        console.log("Login exitoso:", data);
-        
-        // Guardar token de acceso en localStorage del navegador
-        localStorage.setItem("access_token", data.access_token);
-        
-        // Guardar información del usuario en localStorage (convertida a JSON)
-        localStorage.setItem("user", JSON.stringify(data.user));
 
-        // REDIRECCIÓN DESPUÉS DEL LOGIN EXITOSO
-        // Opción 1: Redirección inmediata
-        window.location.href = "dashboard.html";
-        
-        // Opción 2: Reemplazar la página actual (no permite volver atrás)
-        // window.location.replace("dashboard.html");
-    })
-    .catch(error => {
-        // Manejar cualquier error que ocurra durante el proceso
-        console.error("Error en login:", error);
-        const mensaje = document.getElementById("error-message");
-        mensaje.style.display = "block"
-        mensaje.innerHTML = error.detail;
+        const formData = new URLSearchParams();
+        formData.append('username', correo);
+        formData.append('password', contrasenia);
+
+        const loginUrl = `${API_BASE_URL}/access/token`;
+
+        try {
+            const response = await fetch(loginUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'accept': 'application/json'
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.detail || errData.message || response.statusText || 'Credenciales incorrectas');
+            }
+
+            const data = await response.json();
+            console.log('Login exitoso:', data);
+
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            // Si veníamos en modo dev, limpiarlo al iniciar sesión real
+            localStorage.removeItem('dev_mode');
+
+            if (loginBtn) {
+                loginBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i>¡Acceso concedido!';
+                loginBtn.classList.remove('btn-login');
+                loginBtn.classList.add('btn-success');
+            }
+
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 500);
+
+        } catch (error) {
+            console.error('Error en login:', error);
+            if (errorText) errorText.textContent = error.message || 'Error en autenticación';
+            if (errorDiv) errorDiv.style.display = 'block';
+
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalBtnHtml;
+            }
+        }
     });
 });

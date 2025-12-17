@@ -12,6 +12,9 @@
             <p class="card-subtitle text-muted mb-0">Administra las homologaciones de programas académicos</p>
           </div>
           <div class="mt-3 mt-md-0">
+            <button type="button" class="btn btn-success me-2" id="btnExportarHomologaciones">
+              <i class="fas fa-file-excel me-1"></i> Exportar
+            </button>
             <button type="button" class="btn btn-primary" id="btnNuevaHomologacion">
               <i class="fas fa-plus-circle me-1"></i> Nueva Homologación
             </button>
@@ -20,7 +23,7 @@
 
         <!-- Estadísticas -->
         <div class="row g-3 mb-4">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="card bg-primary text-white border-0">
               <div class="card-body p-3">
                 <div class="d-flex justify-content-between align-items-center">
@@ -33,49 +36,90 @@
               </div>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="card bg-success text-white border-0">
               <div class="card-body p-3">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <p class="mb-1 small">Programas SENA</p>
-                    <h4 class="mb-0">0</h4>
+                    <h4 class="mb-0" id="totalProgramasSena">0</h4>
                   </div>
                   <i class="fas fa-book fa-2x opacity-50"></i>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="card bg-info text-white border-0">
               <div class="card-body p-3">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <p class="mb-1 small">Instituciones</p>
-                    <h4 class="mb-0">0</h4>
+                    <h4 class="mb-0" id="totalInstitucionesHom">0</h4>
                   </div>
                   <i class="fas fa-building fa-2x opacity-50"></i>
                 </div>
               </div>
             </div>
           </div>
+          <div class="col-md-3">
+            <div class="card bg-warning text-white border-0">
+              <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="mb-1 small">Créditos Homologados</p>
+                    <h4 class="mb-0" id="totalCreditosHom">0</h4>
+                  </div>
+                  <i class="fas fa-star fa-2x opacity-50"></i>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Búsqueda -->
+        <!-- Filtros de Búsqueda -->
         <div class="row mb-4">
-          <div class="col-md-8">
-            <div class="input-group">
-              <span class="input-group-text bg-primary text-white">
-                <i class="fas fa-search"></i>
-              </span>
-              <input 
-                type="text" 
-                class="form-control" 
-                id="buscar" 
-                placeholder="Buscar por código, programa SENA, institución o programa destino...">
-              <button class="btn btn-outline-secondary" type="button" id="btnLimpiar">
-                <i class="fas fa-times me-1"></i> Limpiar
-              </button>
+          <div class="col-md-12">
+            <div class="card border">
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-5">
+                    <label class="form-label small fw-semibold">
+                      <i class="fas fa-search me-1"></i>Búsqueda General
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="buscar" 
+                      placeholder="Buscar por código, programa SENA, institución o programa destino...">
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label small fw-semibold">
+                      <i class="fas fa-layer-group me-1"></i>Nivel de Programa
+                    </label>
+                    <select class="form-select" id="filtroNivel">
+                      <option value="">Todos los niveles</option>
+                      <option value="Técnico">Técnico</option>
+                      <option value="Tecnólogo">Tecnólogo</option>
+                      <option value="Profesional">Profesional</option>
+                      <option value="Especialización">Especialización</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label small fw-semibold">
+                      <i class="fas fa-building me-1"></i>Institución
+                    </label>
+                    <select class="form-select" id="filtroInstitucionHom">
+                      <option value="">Todas</option>
+                    </select>
+                  </div>
+                  <div class="col-md-1 d-flex align-items-end">
+                    <button class="btn btn-outline-secondary w-100" id="btnLimpiarFiltrosHom" title="Limpiar filtros">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -90,13 +134,16 @@
                 <th>Programa SENA</th>
                 <th>Institución</th>
                 <th>Programa Destino</th>
-                <th class="text-center">Créditos</th>
+                <th>Nivel</th>
+                <th class="text-center">Créditos Hom.</th>
+                <th class="text-center">Créditos Total</th>
+                <th class="text-center">% Homologación</th>
                 <th class="text-center" width="150">Acciones</th>
               </tr>
             </thead>
             <tbody id="tabla-homologaciones">
               <tr>
-                <td colspan="7" class="text-center py-5">
+                <td colspan="10" class="text-center py-5">
                   <div class="spinner-border text-primary mb-3"></div>
                   <p class="text-muted mb-0">Cargando homologaciones...</p>
                 </td>
@@ -109,50 +156,183 @@
   </div>
 </div>
 
-<!-- Modal Crear/Editar -->
+<!-- Modal Crear/Editar Homologación - COMPLETO -->
 <div class="modal fade" id="modalHomologacion" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">
+        <h5 class="modal-title" id="modalHomologacionTitle">
           <i class="fas fa-graduation-cap me-2"></i>Nueva Homologación
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form id="formHomologacion">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="codigoSena" class="form-label">Código Programa SENA *</label>
-              <input type="text" class="form-control" id="codigoSena" required>
+          
+          <!-- SECCIÓN 1: INFORMACIÓN DEL PROGRAMA SENA -->
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h6 class="mb-0"><i class="fas fa-school me-2"></i>Información del Programa SENA</h6>
             </div>
-            <div class="col-md-6">
-              <label for="nombreSena" class="form-label">Nombre Programa SENA *</label>
-              <input type="text" class="form-control" id="nombreSena" required>
-            </div>
-            <div class="col-md-12">
-              <label for="institucion" class="form-label">Institución *</label>
-              <select class="form-select" id="institucion" required>
-                <option value="">Seleccione...</option>
-              </select>
-            </div>
-            <div class="col-md-12">
-              <label for="programaDestino" class="form-label">Programa Destino *</label>
-              <input type="text" class="form-control" id="programaDestino" required>
-            </div>
-            <div class="col-md-4">
-              <label for="creditosTotales" class="form-label">Créditos Totales *</label>
-              <input type="number" class="form-control" id="creditosTotales" min="0" required>
-            </div>
-            <div class="col-md-4">
-              <label for="creditosHomologados" class="form-label">Créditos Homologados *</label>
-              <input type="number" class="form-control" id="creditosHomologados" min="0" required>
-            </div>
-            <div class="col-md-4">
-              <label for="porcentaje" class="form-label">Porcentaje</label>
-              <input type="text" class="form-control" id="porcentaje" readonly>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label for="cod_programa_sena" class="form-label">Código Programa SENA *</label>
+                  <input type="text" class="form-control" id="cod_programa_sena" 
+                    placeholder="Ej: 228106" required>
+                  <small class="text-muted">Código único del programa</small>
+                </div>
+                <div class="col-md-8">
+                  <label for="nombre_programa_sena" class="form-label">Nombre Programa SENA *</label>
+                  <input type="text" class="form-control" id="nombre_programa_sena" 
+                    placeholder="Ej: Tecnología en Análisis y Desarrollo de Software" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="version_programa" class="form-label">Versión del Programa *</label>
+                  <input type="number" class="form-control" id="version_programa" 
+                    placeholder="Ej: 2" min="1" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="titulo" class="form-label">Título que Otorga *</label>
+                  <input type="text" class="form-control" id="titulo" 
+                    placeholder="Ej: Tecnólogo en Análisis y Desarrollo de Software" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="regional" class="form-label">Regional *</label>
+                  <select class="form-select" id="regional" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Risaralda">Risaralda</option>
+                    <option value="Caldas">Caldas</option>
+                    <option value="Quindío">Quindío</option>
+                    <option value="Valle del Cauca">Valle del Cauca</option>
+                    <option value="Antioquia">Antioquia</option>
+                    <option value="Cundinamarca">Cundinamarca</option>
+                    <option value="Atlántico">Atlántico</option>
+                    <option value="Santander">Santander</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
+
+          <!-- SECCIÓN 2: INFORMACIÓN DE LA INSTITUCIÓN DESTINO -->
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h6 class="mb-0"><i class="fas fa-building-columns me-2"></i>Información Institución Destino</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="nit_institucion_destino" class="form-label">Institución Destino *</label>
+                  <select class="form-select" id="nit_institucion_destino" required>
+                    <option value="">Seleccione una institución...</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="programa_ies" class="form-label">Programa en la IES *</label>
+                  <input type="text" class="form-control" id="programa_ies" 
+                    placeholder="Ej: Ingeniería de Sistemas" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="nivel_programa" class="form-label">Nivel del Programa *</label>
+                  <select class="form-select" id="nivel_programa" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Técnico">Técnico Profesional</option>
+                    <option value="Tecnólogo">Tecnológico</option>
+                    <option value="Profesional">Profesional Universitario</option>
+                    <option value="Especialización">Especialización</option>
+                    <option value="Maestría">Maestría</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="snies" class="form-label">Código SNIES *</label>
+                  <input type="number" class="form-control" id="snies" 
+                    placeholder="Ej: 12345" min="1" required>
+                  <small class="text-muted">Código del Sistema Nacional de Información</small>
+                </div>
+                <div class="col-md-4">
+                  <label for="modalidad" class="form-label">Modalidad *</label>
+                  <select class="form-select" id="modalidad" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Presencial">Presencial</option>
+                    <option value="Virtual">Virtual</option>
+                    <option value="Distancia">A Distancia</option>
+                    <option value="Mixta">Mixta</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 3: INFORMACIÓN DE CRÉDITOS -->
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h6 class="mb-0"><i class="fas fa-calculator me-2"></i>Información de Créditos Académicos</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <label for="creditos_homologados" class="form-label">Créditos Homologados *</label>
+                  <input type="number" class="form-control" id="creditos_homologados" 
+                    placeholder="0" min="0" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="creditos_totales" class="form-label">Créditos Totales *</label>
+                  <input type="number" class="form-control" id="creditos_totales" 
+                    placeholder="0" min="1" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="creditos_pendientes" class="form-label">Créditos Pendientes *</label>
+                  <input type="number" class="form-control" id="creditos_pendientes" 
+                    placeholder="0" min="0" required readonly>
+                  <small class="text-muted">Se calcula automáticamente</small>
+                </div>
+                <div class="col-md-3">
+                  <label for="porcentaje_homologacion" class="form-label">% Homologación</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="porcentaje_homologacion" readonly>
+                    <span class="input-group-text">%</span>
+                  </div>
+                  <small class="text-muted">Se calcula automáticamente</small>
+                </div>
+                <div class="col-md-3">
+                  <label for="semestres" class="form-label">Semestres *</label>
+                  <input type="text" class="form-control" id="semestres" 
+                    placeholder="Ej: 10" required>
+                </div>
+              </div>
+
+              <!-- Barra de progreso visual -->
+              <div class="mt-3">
+                <label class="form-label small">Progreso de Homologación:</label>
+                <div class="progress" style="height: 25px;">
+                  <div class="progress-bar bg-success" role="progressbar" 
+                    id="barraProgreso" style="width: 0%;" aria-valuenow="0" 
+                    aria-valuemin="0" aria-valuemax="100">
+                    <span id="textoProgreso">0%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 4: ENLACE A DOCUMENTACIÓN -->
+          <div class="card mb-0">
+            <div class="card-header bg-light">
+              <h6 class="mb-0"><i class="fas fa-link me-2"></i>Enlace a Documentación</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="enlace" class="form-label">Enlace a Documentos *</label>
+                  <input type="url" class="form-control" id="enlace" 
+                    placeholder="https://drive.google.com/..." required>
+                  <small class="text-muted">Enlace a Google Drive, OneDrive u otro repositorio con la documentación</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </form>
       </div>
       <div class="modal-footer">
@@ -160,9 +340,73 @@
           <i class="fas fa-times me-1"></i>Cancelar
         </button>
         <button type="button" class="btn btn-primary" id="btnGuardarHomologacion">
-          <i class="fas fa-save me-1"></i>Guardar
+          <i class="fas fa-save me-1"></i>Guardar Homologación
         </button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Modal de Detalles -->
+<div class="modal fade" id="modalDetallesHom" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-info-circle me-2"></i>Detalles de la Homologación
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="detallesHomologacionContent">
+        <!-- Contenido dinámico -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modales de Confirmación -->
+<div class="modal fade" id="modalExitoHom" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="mb-3">
+          <i class="fas fa-check-circle fa-4x text-success"></i>
+        </div>
+        <h5 id="mensajeExitoHomTitulo">¡Operación Exitosa!</h5>
+        <p id="mensajeExitoHomTexto" class="text-muted mb-0"></p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalErrorHom" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="mb-3">
+          <i class="fas fa-times-circle fa-4x text-danger"></i>
+        </div>
+        <h5 id="mensajeErrorHomTitulo">Error</h5>
+        <p id="mensajeErrorHomTexto" class="text-muted mb-0"></p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Estilos para la barra de progreso */
+.progress-bar {
+    font-weight: 600;
+    font-size: 14px;
+    transition: width 0.6s ease;
+}
+</style>

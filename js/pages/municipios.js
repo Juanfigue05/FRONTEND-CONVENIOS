@@ -4,23 +4,92 @@ let municipiosData = [];
 let municipiosFiltrados = [];
 let municipioEditando = null;
 
-const buscar = document.getElementById('buscar');
+// Elementos del DOM
+const buscar = document.getElementById('searchInput');
+const searchButton = document.getElementById('searchButton');
+const clearSearchButton = document.getElementById('clearSearchButton');
+const datos = document.getElementById('datos');
 const btnNuevoMunicipio = document.getElementById('btnNuevoMunicipio');
-const tablaMunicipios = document.getElementById('tabla-municipios');
-const totalMunicipios = document.getElementById('totalMunicipios');
 
-const modalMunicipio = new bootstrap.Modal(document.getElementById('modalMunicipio'));
-const formMunicipio = document.getElementById('formMunicipio');
-const btnGuardarMunicipio = document.getElementById('btnGuardarMunicipio');
+// Inicializar modales SOLO cuando los elementos existan
+let modalCreate = null;
+let modalEdit = null;
+let modalSuccess = null;
+let modalError = null;
+let modalDelete = null;
 
 export async function Init() {
-    console.log('📍 Inicializando módulo de Municipios...');
+    console.log('🗺️ Inicializando módulo de Municipios...');
     try {
+        // Esperar a que el DOM esté completamente listo
+        await esperarDOM();
+        
+        // Inicializar modales DESPUÉS de que el DOM esté listo
+        inicializarModales();
+        
+        // Cargar datos y eventos
         await cargarMunicipios();
         inicializarEventos();
+        
         console.log('✅ Módulo de Municipios inicializado');
     } catch (error) {
         console.error('❌ Error:', error);
+    }
+}
+
+/**
+ * Espera a que el DOM esté completamente cargado
+ */
+function esperarDOM() {
+    return new Promise(resolve => {
+        if (document.readyState === 'complete') {
+            resolve();
+        } else {
+            setTimeout(resolve, 100);
+        }
+    });
+}
+
+/**
+ * Inicializa los modales Bootstrap de forma segura
+ */
+function inicializarModales() {
+    try {
+        // Verificar que Bootstrap esté disponible
+        if (typeof bootstrap === 'undefined') {
+            console.error('Bootstrap no está disponible');
+            return;
+        }
+
+        // Inicializar cada modal solo si el elemento existe
+        const createModalEl = document.getElementById('createMunicipioModal');
+        if (createModalEl) {
+            modalCreate = new bootstrap.Modal(createModalEl);
+        }
+
+        const editModalEl = document.getElementById('editMunicipioModal');
+        if (editModalEl) {
+            modalEdit = new bootstrap.Modal(editModalEl);
+        }
+
+        const successModalEl = document.getElementById('successModal');
+        if (successModalEl) {
+            modalSuccess = new bootstrap.Modal(successModalEl);
+        }
+
+        const errorModalEl = document.getElementById('errorModal');
+        if (errorModalEl) {
+            modalError = new bootstrap.Modal(errorModalEl);
+        }
+
+        const deleteModalEl = document.getElementById('deleteConfirmModal');
+        if (deleteModalEl) {
+            modalDelete = new bootstrap.Modal(deleteModalEl);
+        }
+
+        console.log('✅ Modales inicializados correctamente');
+    } catch (error) {
+        console.error('Error al inicializar modales:', error);
     }
 }
 
@@ -30,37 +99,34 @@ async function cargarMunicipios() {
         municipiosData = await municipioService.getMunicipios();
         municipiosFiltrados = [...municipiosData];
         renderizarTabla();
-        actualizarTotal();
         console.log(`✅ ${municipiosData.length} municipios cargados`);
     } catch (error) {
         console.error('Error:', error);
+        mostrarError();
     }
 }
 
 function renderizarTabla() {
+    if (!datos) return;
+    
     if (!municipiosFiltrados || municipiosFiltrados.length === 0) {
-        tablaMunicipios.innerHTML = `
-            <tr><td colspan="5" class="text-center py-5">
+        datos.innerHTML = `
+            <tr><td colspan="3" class="text-center py-5">
                 <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                 <p class="text-muted">No se encontraron municipios</p>
+                <small class="text-muted">Intenta buscar con otro término</small>
             </td></tr>`;
         return;
     }
 
-    tablaMunicipios.innerHTML = municipiosFiltrados.map((m, index) => `
+    datos.innerHTML = municipiosFiltrados.map((m, index) => `
         <tr>
-            <td>${index + 1}</td>
-            <td><strong>${m.codigo_dane || 'N/A'}</strong></td>
+            <td><strong>${m.id_municipio || index + 1}</strong></td>
             <td>
                 <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                ${m.nombre || 'N/A'}
+                ${m.nombre || m.nom_municipio || 'N/A'}
             </td>
-            <td class="text-center">
-                ${m.estado 
-                    ? '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Activo</span>'
-                    : '<span class="badge bg-secondary"><i class="fas fa-times-circle me-1"></i>Inactivo</span>'}
-            </td>
-            <td class="text-center">
+            <td class="text-end">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-warning" onclick="window.editarMunicipio(${m.id_municipio})" title="Editar">
                         <i class="fas fa-edit"></i>
@@ -75,100 +141,189 @@ function renderizarTabla() {
 }
 
 function mostrarCargando() {
-    tablaMunicipios.innerHTML = `
-        <tr><td colspan="5" class="text-center py-5">
-            <div class="spinner-border text-primary"></div>
-            <p class="text-muted mt-3">Cargando municipios...</p>
-        </td></tr>`;
+    if (datos) {
+        datos.innerHTML = `
+            <tr><td colspan="3" class="text-center py-5">
+                <div class="spinner-border text-primary"></div>
+                <p class="text-muted mt-3">Cargando municipios...</p>
+            </td></tr>`;
+    }
 }
 
-function actualizarTotal() {
-    totalMunicipios.textContent = municipiosFiltrados.length;
+function mostrarError() {
+    if (datos) {
+        datos.innerHTML = `
+            <tr><td colspan="3" class="text-center py-5">
+                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                <p class="text-muted">Error al cargar municipios</p>
+            </td></tr>`;
+    }
 }
 
 function aplicarFiltros() {
-    const texto = buscar.value.toLowerCase();
-    municipiosFiltrados = municipiosData.filter(m => {
-        return !texto || 
-            (m.nombre && m.nombre.toLowerCase().includes(texto)) ||
-            (m.codigo_dane && m.codigo_dane.toLowerCase().includes(texto));
-    });
+    const texto = buscar?.value.toLowerCase() || '';
+    
+    if (!texto) {
+        municipiosFiltrados = [...municipiosData];
+    } else {
+        municipiosFiltrados = municipiosData.filter(m => {
+            const nombre = m.nombre || m.nom_municipio || '';
+            return nombre.toLowerCase().includes(texto);
+        });
+    }
+    
     renderizarTabla();
-    actualizarTotal();
+}
+
+function limpiarBusqueda() {
+    if (buscar) buscar.value = '';
+    municipiosFiltrados = [...municipiosData];
+    renderizarTabla();
 }
 
 function inicializarEventos() {
+    // Búsqueda
     buscar?.addEventListener('input', aplicarFiltros);
+    searchButton?.addEventListener('click', aplicarFiltros);
+    clearSearchButton?.addEventListener('click', limpiarBusqueda);
+    
+    // Botón nuevo municipio
     btnNuevoMunicipio?.addEventListener('click', abrirModalNuevo);
-    btnGuardarMunicipio?.addEventListener('click', guardarMunicipio);
+    
+    // Botones de formularios
+    const btnGuardar = document.getElementById('btnGuardarMunicipio');
+    btnGuardar?.addEventListener('click', guardarMunicipio);
+    
+    const btnEdit = document.getElementById('btnEditMunicipio');
+    btnEdit?.addEventListener('click', guardarEdicion);
+    
+    const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+    btnConfirmDelete?.addEventListener('click', confirmarEliminacion);
 
+    // Funciones globales
     window.editarMunicipio = editarMunicipio;
     window.eliminarMunicipio = eliminarMunicipio;
 }
 
 function abrirModalNuevo() {
     municipioEditando = null;
-    formMunicipio.reset();
-    modalMunicipio.show();
+    document.getElementById('formSaveMunicipio')?.reset();
+    modalCreate?.show();
 }
 
 async function editarMunicipio(id) {
     try {
         municipioEditando = await municipioService.getMunicipioById(id);
         
-        document.getElementById('codigo_dane').value = municipioEditando.codigo_dane || '';
-        document.getElementById('nombre').value = municipioEditando.nombre || '';
+        document.getElementById('editIdMunicipio').value = municipioEditando.id_municipio;
+        document.getElementById('editNombreMunicipio').value = municipioEditando.nombre || municipioEditando.nom_municipio;
         
-        modalMunicipio.show();
+        modalEdit?.show();
     } catch (error) {
         console.error('Error:', error);
+        mostrarMensajeError('Error', 'No se pudo cargar el municipio');
     }
 }
 
 async function guardarMunicipio() {
     try {
-        const data = {
-            codigo_dane: document.getElementById('codigo_dane').value,
-            nombre: document.getElementById('nombre').value,
-            estado: true
-        };
+        const idMunicipio = document.getElementById('inputIdMunicipio')?.value;
+        const nombreMunicipio = document.getElementById('inputNombreMunicipio')?.value;
 
-        if (!data.codigo_dane || !data.nombre) {
-            alert('Completa todos los campos');
+        if (!idMunicipio || !nombreMunicipio) {
+            mostrarMensajeError('Campos incompletos', 'Completa todos los campos');
             return;
         }
 
-        btnGuardarMunicipio.disabled = true;
-        btnGuardarMunicipio.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Guardando...';
+        const data = {
+            id_municipio: parseInt(idMunicipio),
+            nom_municipio: nombreMunicipio,
+            estado: true
+        };
 
-        if (municipioEditando) {
-            await municipioService.updateMunicipio(municipioEditando.id_municipio, data);
-            alert('Municipio actualizado');
-        } else {
-            await municipioService.createMunicipio(data);
-            alert('Municipio creado');
+        await municipioService.createMunicipio(data);
+        modalCreate?.hide();
+        mostrarMensajeExito('¡Municipio creado!', 'El municipio se ha registrado correctamente');
+        await cargarMunicipios();
+        
+        document.getElementById('formSaveMunicipio')?.reset();
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarMensajeError('Error al guardar', error.message);
+    }
+}
+
+async function guardarEdicion() {
+    try {
+        const id = document.getElementById('editIdMunicipio')?.value;
+        const nombre = document.getElementById('editNombreMunicipio')?.value;
+
+        if (!nombre) {
+            mostrarMensajeError('Campo incompleto', 'El nombre es obligatorio');
+            return;
         }
 
-        modalMunicipio.hide();
+        const data = {
+            nom_municipio: nombre,
+            estado: true
+        };
+
+        await municipioService.updateMunicipio(id, data);
+        modalEdit?.hide();
+        mostrarMensajeExito('¡Municipio actualizado!', 'Los cambios se han guardado correctamente');
         await cargarMunicipios();
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al guardar');
-    } finally {
-        btnGuardarMunicipio.disabled = false;
-        btnGuardarMunicipio.innerHTML = '<i class="fas fa-save me-2"></i>Guardar';
+        mostrarMensajeError('Error al actualizar', error.message);
     }
 }
 
-async function eliminarMunicipio(id) {
-    if (!confirm('¿Eliminar este municipio?')) return;
+let idAEliminar = null;
+
+function eliminarMunicipio(id) {
+    idAEliminar = id;
+    const municipio = municipiosData.find(m => m.id_municipio == id);
+    const mensaje = `¿Estás seguro de eliminar el municipio "${municipio?.nombre || municipio?.nom_municipio || 'este municipio'}"?`;
+    
+    const msgElement = document.getElementById('deleteConfirmMessage');
+    if (msgElement) {
+        msgElement.textContent = mensaje;
+    }
+    
+    modalDelete?.show();
+}
+
+async function confirmarEliminacion() {
     try {
-        await municipioService.deleteMunicipio(id);
-        alert('Municipio eliminado');
+        if (!idAEliminar) return;
+        
+        await municipioService.deleteMunicipio(idAEliminar);
+        modalDelete?.hide();
+        mostrarMensajeExito('¡Municipio eliminado!', 'El municipio se ha eliminado correctamente');
         await cargarMunicipios();
+        idAEliminar = null;
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al eliminar');
+        mostrarMensajeError('Error al eliminar', error.message);
     }
 }
-ENDOFFILE
+
+function mostrarMensajeExito(titulo, mensaje) {
+    const titleEl = document.getElementById('successModalTitle');
+    const messageEl = document.getElementById('successModalMessage');
+    
+    if (titleEl) titleEl.textContent = titulo;
+    if (messageEl) messageEl.textContent = mensaje;
+    
+    modalSuccess?.show();
+}
+
+function mostrarMensajeError(titulo, mensaje) {
+    const titleEl = document.getElementById('errorModalTitle');
+    const messageEl = document.getElementById('errorModalMessage');
+    
+    if (titleEl) titleEl.textContent = titulo;
+    if (messageEl) messageEl.textContent = mensaje;
+    
+    modalError?.show();
+}

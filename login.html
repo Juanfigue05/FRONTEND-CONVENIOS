@@ -177,80 +177,9 @@
             }
         });
 
-        // Login functionality
-        const loginForm = document.getElementById('loginForm');
-        const loginUrl = "https://disciplined-amazement-production.up.railway.app/access/token";
-
-        loginForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            const correo = document.getElementById("inputEmail").value.trim();
-            const contrasenia = document.getElementById("inputPassword").value;
-            const errorDiv = document.getElementById("error-message");
-            const errorText = document.getElementById("error-text");
-            const loginBtn = document.getElementById("login");
-
-            // Ocultar errores previos
-            errorDiv.style.display = "none";
-
-            // Validación básica
-            if (!correo || !contrasenia) {
-                errorText.textContent = "Por favor completa todos los campos";
-                errorDiv.style.display = "block";
-                return;
-            }
-
-            // Mostrar loading
-            const originalBtnText = loginBtn.innerHTML;
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Iniciando sesión...';
-
-            try {
-                const formData = new URLSearchParams();
-                formData.append("username", correo);
-                formData.append("password", contrasenia);
-
-                const response = await fetch(loginUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "accept": "application/json"
-                    },
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.detail || "Credenciales incorrectas");
-                }
-
-                const data = await response.json();
-                console.log("Login exitoso:", data);
-
-                // Guardar en localStorage
-                localStorage.setItem("access_token", data.access_token);
-                localStorage.setItem("user", JSON.stringify(data.user));
-
-                // Mostrar mensaje de éxito
-                loginBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i>¡Acceso concedido!';
-                loginBtn.classList.remove('btn-login');
-                loginBtn.classList.add('btn-success');
-
-                // Redireccionar después de 500ms
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 500);
-
-            } catch (error) {
-                console.error("Error en login:", error);
-                errorText.textContent = error.message || "Error al iniciar sesión. Verifica tus credenciales.";
-                errorDiv.style.display = "block";
-                
-                // Restaurar botón
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = originalBtnText;
-            }
-        });
+        // Login functionality: moved to external module for consistency
+    </script>
+    <script type="module" src="js/login.js"></script>
     </script>
 </body>
 </html>

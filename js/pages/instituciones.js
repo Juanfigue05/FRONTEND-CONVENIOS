@@ -1,4 +1,4 @@
-import { institucionService } from '../api/institucion.service.js';
+import { institucionService } from '../api/instituciones.service.js';
 import { municipioService } from '../api/municipio.service.js';
 
 let institucionesData = [];

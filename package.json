@@ -1,0 +1,14 @@
+{
+  "name": "convenios-frontend",
+  "version": "1.0.0",
+  "description": "Front-End de la aplicación de gestión de convenios",
+  "main": "inicio.html",
+  "scripts": {
+    "start": "serve -s . -l 3000"
+  },
+  "author": "Jhonatan-Oscar-Juan",
+  "license": "MIT",
+  "dependencies": {
+    "serve": "^14.2.0" 
+  }
+}

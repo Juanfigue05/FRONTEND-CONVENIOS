@@ -115,6 +115,8 @@ export const userService = {
      * @returns {Promise<Array>}
      */
     getRoles: () => {
-        return request(`/usuario/roles`);
+        // Algunos despliegues no exponen /usuario/roles; suprimir el evento global
+        // para evitar mostrar un banner de error ante un 404 que no impide la carga.
+        return request(`/usuario/roles`, { suppressApiErrorEvent: true });
     },
 };
