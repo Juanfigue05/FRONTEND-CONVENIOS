@@ -4,11 +4,10 @@
   "description": "Front-End de la aplicación de gestión de convenios",
   "main": "inicio.html",
   "scripts": {
-    "start": "serve -s . -l 3000"
+    "start": "serve -s . -l 3000",
+    "build": "echo 'No build necessary for this basic project'"
   },
+  "keywords": ["html", "css", "javascript", "railway"],
   "author": "Jhonatan-Oscar-Juan",
-  "license": "MIT",
-  "dependencies": {
-    "serve": "^14.2.0" 
-  }
+  "license": "MIT"
 }
